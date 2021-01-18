@@ -1,0 +1,359 @@
+cluster num: 10
+Tobacco
+Neurotransmitter
+Dopamine
+Carcinogen
+Carboxylic acid
+Acetate
+Coal
+Vaccine
+Alcohol
+Alkaloid
+Metabolite
+HB
+Auxin
+Antibody
+Hormone
+Pyridine
+Coumarin
+Cortisol
+Herbicide
+
+cluster num: 21
+Nicotine product
+Nornicotine
+Malic acid
+Cotinine
+Mecamylamine
+Anabasine
+Tyramine
+Bupropion
+Varenicline
+Menthol
+Atrazine
+Malondialdehyde
+
+cluster num: 15
+Delivery
+Positron emission tomography
+Infusion
+Enhancement
+Inflation
+Skin prick test
+Blood sampling
+
+cluster num: 2
+Tar
+Glycopeptide
+Insecticide
+Water
+Honey
+T3
+Norepinephrine
+Acetylcholine
+Air
+Sodium
+Salt
+Ammonia
+Stimulant
+Camphor
+Eugenol
+Prolactin
+Nortriptyline
+Clonidine
+Catecholamine
+Glucose
+Amino acid
+ETHYLENE
+Glutathione
+MDA
+N-acetyl-L-cysteine
+
+cluster num: 26
+Engaged
+Education
+Reduction
+Blood pressure
+Addiction
+Adopted
+Stopped smoking
+Positive
+Negative
+Immune
+Abstinent
+Replacement
+Pain tolerance
+New finding
+Personality traits
+J2
+Disability
+
+cluster num: 18
+Blood plasma
+Blood
+Urine
+Venous plasma
+Serum
+Venous blood
+
+cluster num: 20
+Opioid
+Carfentanil
+Analgesic
+Methadone
+
+cluster num: 8
+Smoke
+Cytochrome P450 enzyme
+Extraction
+Assay
+Drug Administration
+Nicotine replacement therapy
+Tobacco Smoke
+Stillbirth
+Sampling
+History of
+Causative agent
+Artificial saliva
+Abuse
+Urine sample
+HPLC
+Schizophrenia
+Therapy
+Laboratory test
+Allergen
+Culture
+Probable
+Pregnant
+Employment status
+Gas-liquid chromatography
+Cigarette smoke
+Mineral
+
+cluster num: 5
+Chronic pain
+Pain
+Hyperalgesia
+Acute pain
+Analgesia
+Coordinated
+Generalized itching
+Headache
+Stiffness
+
+cluster num: 19
+Prescription
+Release
+Manipulation
+Reinforcement
+Construction
+Nylon
+Elevation
+
+cluster num: 28
+Tobacco use
+Cigarette smoker
+Exposed to tobacco smoke
+Smoker
+
+cluster num: 6
+Behavioral therapy
+Intervention
+Surveillance
+Prevention
+Risk assessment
+Investigations
+Decontamination
+Relapse prevention
+Clinical trial
+Assisting
+Behavioral counseling
+Discussion
+Reporting
+Injury prevention
+
+cluster num: 4
+Exposure
+Urticaria
+Strain
+Callus
+
+cluster num: 23
+Coronary artery disease
+Increased heart rate
+Placental abruption
+Sex
+Hypertension
+Cardiac failure
+Emission
+Perspiration
+Cardiovascular disease
+
+cluster num: 9
+Oral
+Transdermal
+Pulmonary
+
+cluster num: 22
+Cancer
+Source
+Leukemia
+Pancreatic cancer
+Diagnosis
+
+cluster num: 31
+Separation
+Mass
+Damage
+Cut
+Wound
+Absence
+Patch
+Burn
+Fracture
+Closed fracture
+
+cluster num: 30
+Mass spectrometry
+Spectrometry
+
+cluster num: 3
+PH
+Sensitivity
+
+cluster num: 39
+Nicotine dependence
+Tobacco dependence
+Nicotine withdrawal
+
+cluster num: 1
+Oral mucosa
+Gum
+Tissue
+Brain
+Skin
+Joint
+Hand
+Left hand
+Heart
+Head
+Central nervous system
+Mouth
+Trigeminal nerve
+Nasal
+Ovary
+Media
+Femoral
+Bone
+
+cluster num: 7
+Bright
+Death
+Irritability
+Anxiety
+Restlessness
+Hunger
+Relief
+Confusion
+Withdrawn
+Stress
+Dyspnoea
+Blocking
+
+cluster num: 36
+Neurological disorders
+Disorder
+Insomnia
+Nausea
+Vomiting
+Ulcerative colitis
+Chronic pancreatitis
+Pancreatitis
+Aids
+Hypoxia
+Infection
+
+cluster num: 25
+Sudden infant death
+
+cluster num: 16
+Obesity
+Alzheimer's disease
+Parkinson's disease
+Tourette's syndrome
+
+cluster num: 24
+Sickness
+Dizziness
+Prostration
+Comorbid conditions
+Impairment
+Lightheadedness
+Healthy adult
+
+cluster num: 33
+Difficulty
+Independent
+
+cluster num: 29
+Inflammation
+
+cluster num: 38
+Capsaicin
+Glycerin
+5-hydroxytryptamine
+Beta-endorphin
+Caffeine
+
+cluster num: 14
+Nicotinic receptor
+Acetylcholine receptor
+Receptor
+
+cluster num: 12
+Dentate gyrus
+Hippocampus
+Insula
+Motor area
+
+cluster num: 35
+Amygdala
+Nucleus accumbens
+Putamen
+Cerebellum
+Thalamus
+
+cluster num: 34
+T1
+T2
+
+cluster num: 27
+Gamma-aminobutyric acid
+Glutamate
+
+cluster num: 37
+Carbon monoxide
+Oxygen
+
+cluster num: 32
+Enzyme
+Glutamate decarboxylase
+
+cluster num: 11
+Suppression
+Tobacco dust
+Dr
+
+cluster num: 0
+P-selectin
+Fibrinogen
+Complement
+
+cluster num: 13
+Adhesion
+
+cluster num: 17
+Superoxide dismutase
+Catalase
+Lactate dehydrogenase
+

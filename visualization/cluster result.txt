@@ -1,0 +1,417 @@
+clulster num: 2
+TOBACCO
+
+clulster num: 1
+Nicotine
+
+clulster num: 51
+Neurotransmitter
+Prescription
+Behavioral therapy
+Intervention
+Cytochrome P450 enzyme
+
+clulster num: 45
+Dopamine
+Opioid
+
+clulster num: 46
+Glycopeptide
+Carboxylic acid
+Acetate
+Coal
+Alcohol
+Pyridine
+Stimulant
+Pancreatic cancer
+Diagnosis
+Insecticide
+Honey
+Menthol
+Catecholamine
+Amino acid
+Caffeine
+Adopted
+Artificial saliva
+ETHYLENE
+Methadone
+Relapse prevention
+Inflation
+Elevation
+Assisting
+Discussion
+Reporting
+Assay
+Blood pressure
+Stillbirth
+Obesity
+Causative agent
+HB
+Abuse
+Immune
+Urine sample
+HPLC
+Schizophrenia
+Antibody
+Laboratory test
+Employment status
+Gas-liquid chromatography
+Disability
+Mineral
+Complement
+Cigarette smoker
+Smoker
+Cut
+Burn
+Callus
+Closed fracture
+Neurological disorders
+Disorder
+Placental abruption
+Alzheimer's disease
+Parkinson's disease
+Tourette's syndrome
+Aids
+Hypoxia
+Infection
+Dr
+Pulmonary
+Bright
+Nylon
+New finding
+Culture
+Personality traits
+J2
+Separation
+Risk assessment
+Injury prevention
+Oral mucosa
+Tissue
+Joint
+Central nervous system
+Mouth
+Trigeminal nerve
+Glycerin
+Salt
+Malic acid
+Tyramine
+Glucose
+Sudden infant death
+Head
+Prostration
+Confusion
+Blocking
+Coordinated
+Vomiting
+Ulcerative colitis
+Chronic pancreatitis
+Pancreatitis
+Motor area
+Emission
+Carbon monoxide
+Ammonia
+Enzyme
+Glutamate decarboxylase
+
+clulster num: 42
+Carcinogen
+Education
+Surveillance
+
+clulster num: 9
+Cotinine
+
+clulster num: 68
+Vaccines
+Clinical trial
+
+clulster num: 31
+Alkaloid
+
+clulster num: 13
+Metabolite
+Stiffness
+Fracture
+Femoral
+Bone
+
+clulster num: 65
+Mecamylamine
+Nicotinic receptor
+Acetylcholine receptor
+Dentate gyrus
+
+clulster num: 8
+Auxin
+T3
+Wound
+T1
+T2
+
+clulster num: 56
+Hormone
+Beta-endorphin
+Cortisol
+Prolactin
+Venous blood
+Withdrawn
+
+clulster num: 63
+Coumarin
+Eugenol
+Probable
+Camphor
+Nasal
+
+clulster num: 43
+Nortriptyline
+Clonidine
+Varenicline
+Pregnant
+Behavioral counseling
+Bupropion
+
+clulster num: 32
+Fibrinogen
+Cigarette smoke
+P-selectin
+Cardiovascular disease
+Adhesion
+
+clulster num: 15
+Delivery
+
+clulster num: 61
+Cancer
+
+clulster num: 57
+Source
+Manipulation
+Reinforcement
+Enhancement
+Strains
+Infusion
+
+clulster num: 62
+Leukemia
+Construction
+Spectrometry
+Mass
+
+clulster num: 66
+Tar
+
+clulster num: 6
+Engaged
+Drug Administration
+
+clulster num: 4
+Plasma
+
+clulster num: 26
+Norepinephrine
+5-hydroxytryptamine
+Acetylcholine
+Gamma-aminobutyric acid
+Glutamate
+
+clulster num: 24
+Air
+Headache
+Dizziness
+Tobacco dust
+Atrazine
+Herbicide
+Perspiration
+
+clulster num: 25
+Oxygen
+Damage
+N-acetyl-L-cysteine
+Glutathione
+Malondialdehyde
+Ovary
+Media
+MDA
+Superoxide dismutase
+Catalase
+Lactate dehydrogenase
+
+clulster num: 29
+Carfentanil
+Positron emission tomography
+Venous plasma
+Receptor
+Insula
+Putamen
+
+clulster num: 20
+Analgesic
+Chronic pain
+Pain
+Acute pain
+Pain tolerance
+Impairment
+Comorbid conditions
+Analgesia
+Sex
+
+clulster num: 17
+Smoke
+
+clulster num: 39
+Tobacco smoke
+
+clulster num: 53
+Release
+
+clulster num: 49
+Prevention
+
+clulster num: 16
+Reduction
+
+clulster num: 37
+Nicotine replacement therapy
+
+clulster num: 60
+Replacement
+
+clulster num: 28
+Therapy
+
+clulster num: 36
+Skin prick test
+Allergen
+Urticaria
+Positive
+Dyspnoea
+Generalized itching
+
+clulster num: 50
+Blood sampling
+Increased heart rate
+Transdermal
+Lightheadedness
+Suppression
+
+clulster num: 0
+Mass spectrometry
+Assessment
+Abstinent
+Absence
+Relief
+
+clulster num: 22
+History of
+Difficulty
+Insomnia
+Stopped smoking
+Heart
+Irritability
+Anxiety
+Restlessness
+Hunger
+
+clulster num: 27
+Independent
+
+clulster num: 64
+Inflammation
+Sensitivity
+Capsaicin
+Hyperalgesia
+
+clulster num: 10
+Tobacco use
+
+clulster num: 33
+Exposed to tobacco smoke
+
+clulster num: 5
+Exposure
+
+clulster num: 3
+Coronary artery disease
+Hypertension
+Cardiac failure
+Sodium
+
+clulster num: 14
+Nicotine dependence
+
+clulster num: 21
+Oral
+
+clulster num: 59
+Extraction
+
+clulster num: 44
+PH
+
+clulster num: 23
+Addiction
+
+clulster num: 7
+Tobacco dependence
+
+clulster num: 40
+Sampling
+Decontamination
+Skin
+Left hand
+Hand
+Sickness
+
+clulster num: 54
+Water
+
+clulster num: 30
+Negative
+
+clulster num: 34
+Patch
+
+clulster num: 11
+Gum
+
+clulster num: 12
+Nucleus accumbens
+Hippocampus
+Amygdala
+
+clulster num: 55
+Cerebellum
+Thalamus
+Healthy adult
+
+clulster num: 41
+Blood
+
+clulster num: 19
+Urine
+
+clulster num: 58
+Serum
+
+clulster num: 47
+Nornicotine
+
+clulster num: 35
+Anabasine
+
+clulster num: 48
+Death
+
+clulster num: 38
+Brain
+
+clulster num: 67
+Stress
+
+clulster num: 18
+Nicotine withdrawal
+
+clulster num: 52
+Nausea
+

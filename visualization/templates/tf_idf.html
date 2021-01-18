@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+		<link rel="stylesheet" href="\static\css\jqtree.css" />
+<script src="\static\js\jquery.min.js"></script>
+<script src="\static\js\tree.jquery.js"></script>
+
+
+</head>
+<body>
+<div id="myTree"></div>
+
+</body>
+<script type="text/javascript">
+	const  items= {{ List|safe }}
+
+	$("#myTree").tree({data: items});
+
+</script>
+</html>

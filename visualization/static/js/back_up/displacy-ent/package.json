@@ -1,0 +1,52 @@
+{
+  "_from": "displacy-ent",
+  "_id": "displacy-ent@1.0.2",
+  "_inBundle": false,
+  "_integrity": "sha1-Ags+iFZAO40douIE3E0tA7/NJF8=",
+  "_location": "/displacy-ent",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "displacy-ent",
+    "name": "displacy-ent",
+    "escapedName": "displacy-ent",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/displacy-ent/-/displacy-ent-1.0.2.tgz",
+  "_shasum": "020b3e8856403b8d1da2e204dc4d2d03bfcd245f",
+  "_spec": "displacy-ent",
+  "_where": "E:\\github_file\\medical-search",
+  "author": {
+    "name": "Ines Montani"
+  },
+  "bugs": {
+    "url": "https://github.com/explosion/displacy-ent/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "An open-source named entity visualiser for the modern web",
+  "homepage": "https://github.com/explosion/displacy-ent#readme",
+  "keywords": [
+    "nlp",
+    "visualizer",
+    "spacy"
+  ],
+  "license": "MIT",
+  "main": "displacy-ent.js",
+  "name": "displacy-ent",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/explosion/displacy-ent.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.2"
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="\static\css\feature.css">  
+	<script  src='\static\js\displacy-ent.js'></script>
+	<meta charset="UTF-8">
+</head>
+<body>
+<div id='displacy'>
+	
+</div>
+
+<button>next batch</button>
+</body>
+<script >
+	const ents = ["anatomicalsitemention", "medicationmention","drugchangestatusannotation","strengthannotation","fractionstrengthannotation", "requencyunitannotation","diseasedisordermention", "signsymptommention","dateannotation", "routeannotation","measurementannotation","proceduremention", "timemention", "strengthunitannotation"]
+	var entity_list = {{ List|safe }}
+	var attribute_list={{ attributes|safe }}
+	 
+	const displacy = new displaCyENT('http://localhost:8000', {
+    container: '#displacy',
+});
+	entity_list.forEach(({title,text,spans}) =>{ 
+		displacy.render(text, spans, ents,title)
+	}		);
+
+    
+    var x = document.querySelectorAll("mark");
+    x.forEach((mark,i)=>{
+    	mark.setAttribute('title', JSON.stringify(attribute_list[i]));
+
+    });
+</script>
+</html>

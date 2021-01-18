@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+</style>
+<body>
+	<div id="chart">
+	</div>
+</body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var snomed_codes = {{ Dict|safe }}
+var w = 3000,
+    h = 3000;
+  
+  var cluster = d3.layout.cluster()
+      .size([h, w - 160]);
+  
+  var diagonal = d3.svg.diagonal()
+      .projection(function(d) { return [d.y, d.x]; });
+  
+ var vis = d3.select("#chart").append("svg:svg")
+     .attr("width", w)
+     .attr("height", h)
+   .append("svg:g")
+     .attr("transform", "translate(40, 0)");
+ 
+ 
+   var nodes = cluster.nodes(snomed_codes);
+ 
+   var link = vis.selectAll("path.link")
+       .data(cluster.links(nodes))
+     .enter().append("svg:path")
+       .attr("class", "link")
+       .attr("d", diagonal);
+ 
+   var node = vis.selectAll("g.node")
+       .data(nodes)
+     .enter().append("svg:g")
+       .attr("class", "node")
+       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+ 
+   node.append("svg:circle")
+       .attr("r", 4.5);
+ 
+   node.append("svg:text")
+       .attr("dx", function(d) { return d.children ? -8 : 8; })
+       .attr("dy", 3)
+       .attr("text-anchor", function(d) { return d.children ? "end" : "start"; })
+       .text(function(d) { return d.name; });
+ 
+
+</script>

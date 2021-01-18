@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+<div id="view"></div>
+</body>
+<script type="text/javascript">
+	// Node content
+  function renderNode(selection, rcd) {
+    selection.append('input')
+        .attr('type', 'checkbox')
+        .on('change', function () {
+          d3.select('#selected').text(checkboxValues(d3.select('#view')));
+        });
+    selection.append('span')
+        .text(rcd.id);
+  }
+
+  // Return array of ids that is checked
+  function checkboxValues(selection) {
+    return selection.select('.body')
+       .selectAll('input:checked').data().map(d => d.id);
+  }
+
+  // Recursively append child nodes
+  function nextLevel(selection, node) {
+    const label = selection.append('span');
+    const arrow = label.append('span').classed('arrow', true);
+    label.call(renderNode, node.data);
+    if (!node.hasOwnProperty('children')) return;
+    const items = selection.append('ul')
+        .style('list-style-type', 'none')
+      .selectAll('li')
+        .data(node.children, d => d.id);
+    items.exit().remove();
+    items.enter()
+      .append('li').merge(items)
+        .each(function (d) {
+          d3.select(this).call(nextLevel, d);
+        });
+    label.select('.arrow')
+        .text('▼ ')
+        .on('click', function () {  // Collapse on click
+          const childList = selection.select('ul');
+          if (!childList.size()) return;
+          const expanded = childList.style('display') !== 'none';
+          d3.select(this).text(expanded ? '▶ ' : '▼ ');
+          childList.style('display', expanded ? 'none' : 'inherit');
+        });
+  }
+
+  // Generate tree view
+  function tree(selection) {
+    selection
+        .classed('viewport', true)
+        .style('overflow-y', 'scroll')
+        .style('height', '500px')
+      .append('div')
+        .classed('body', true)
+        .style('transform', 'scale(1.5)')
+        .style('transform-origin', 'top left');
+  }
+
+  // Update tree data
+  function updateTree(selection, items) {
+    const root = d3.stratify()
+      .id(d => d.id)
+      .parentId(d => d.parent)(items);
+    selection.select('.body')
+        .call(nextLevel, root);
+    // Remove dummy root node
+    selection.select('.body > span').remove();
+    selection.select('.body > ul').style('padding-left', 0);
+  }
+
+
+ // var data= {{ List|safe }}
+  // Render
+  var data=[{"id":"root"},{"id":"Hominidae","parent":"root"},{"id":"Ponginae","parent":"Hominidae"},{"id":"Pongini","parent":"Ponginae"},{"id":"Pongo","parent":"Pongini"},{"id":"P. pygmaeus","parent":"Pongo"},{"id":"P. abelii","parent":"Pongo"},{"id":"P. tapanuliensis","parent":"Pongo"},{"id":"Homininae","parent":"Hominidae"},{"id":"Gorillini","parent":"Homininae"},{"id":"Gorilla","parent":"Gorillini"},{"id":"G. gorilla","parent":"Gorilla"},{"id":"G. g. gorilla","parent":"G. gorilla"},{"id":"G. g. diehli","parent":"G. gorilla"},{"id":"G. beringei","parent":"Gorilla"},{"id":"G. b. beringei","parent":"G. beringei"},{"id":"G. b. graueri","parent":"G. beringei"},{"id":"Hominini","parent":"Homininae"},{"id":"Panina","parent":"Hominini"},{"id":"Pan","parent":"Panina"},{"id":"P. troglodytes","parent":"Pan"},{"id":"P. t. troglodytes","parent":"P. troglodytes"},{"id":"P. t. verus","parent":"P. troglodytes"},{"id":"P. t. ellioti","parent":"P. troglodytes"},{"id":"P. t. schweinfurthii","parent":"P. troglodytes"},{"id":"P. paniscus","parent":"Pan"},{"id":"Hominina","parent":"Hominini"},{"id":"Homo","parent":"Hominina"},{"id":"H. sapiens","parent":"Homo"},{"id":"H. s. sapiens","parent":"H. sapiens"}]
+  d3.select('#view div').remove();
+  d3.select('#view').append('div')
+      .call(tree)
+      .call(updateTree, data);
+</script>
+</html>

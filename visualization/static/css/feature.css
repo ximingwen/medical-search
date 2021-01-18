@@ -1,0 +1,235 @@
+.entities {
+     line-height: 2; 
+}
+
+[data-entity] {
+     padding: 0.25em 0.35em;
+     margin: 0px 0.25em;
+     line-height: 1;
+     display: inline-block; 
+     border-bottom: 3px solid;
+}
+
+[data-entity]::after {
+     box-sizing: border-box;
+     content: attr(data-entity);
+     font-size: 0.6em;
+     line-height: 1;
+     padding: 0.35em;
+     border-radius: 0.35em;
+     text-transform: uppercase;
+     display: inline-block;
+     vertical-align: middle;
+     margin: 0px 0px 0.1rem 0.5rem; 
+}
+[label="key"][data-entity="medicationmention"] {
+     background: rgba(47, 187, 171, 0.2);
+     border-color: rgb(47, 187, 171); 
+}
+
+[data-entity][data-entity="medicationmention"]::after {
+     background: rgb(47, 187, 171); 
+}
+
+[label="key"][data-entity="signsymptommention"] {
+     background: rgba(166, 226, 45, 0.2);
+     border-color: rgb(166, 226, 45); 
+}
+
+[data-entity][data-entity="signsymptommention"]::after {
+     background: rgb(166, 226, 45); 
+}
+
+[label="key"][data-entity="proceduremention"] {
+     background: rgba(224, 0, 132, 0.2);
+     border-color: rgb(224, 0, 132); 
+}
+
+[data-entity][data-entity="proceduremention"]::after {
+     background: rgb(224, 0, 132); 
+}
+
+[label="key"][data-entity="measurementannotation"] {
+     background: rgba(67, 198, 252, 0.2);
+     border-color: rgb(67, 198, 252); 
+}
+
+[data-entity][data-entity="measurementannotation"]::after {
+     background: rgb(67, 198, 252); 
+}
+
+[label="key"][data-entity="strengthunitannotation"] {
+     background: rgba(67, 198, 252, 0.2);
+     border-color: rgb(67, 198, 252); 
+}
+
+[data-entity][data-entity="strengthunitannotation"]::after {
+     background: rgb(67, 198, 252); 
+}
+
+[label="key"][data-entity="dateannotation"] {
+     background: rgba(253, 151, 32, 0.2);
+     border-color: rgb(253, 151, 32); 
+}
+
+[data-entity][data-entity="dateannotation"]::after {
+     background: rgb(253, 151, 32); 
+}
+
+[label="key"][data-entity="anatomicalsitemention"] {
+     background: rgba(253, 151, 32, 0.2);
+     border-color: rgb(253, 151, 32); 
+}
+
+[data-entity][data-entity="anatomicalsitemention"]::after {
+     background: rgb(253, 151, 32); 
+}
+
+[label="key"][data-entity="drugchangestatusannotation"] {
+     background: rgba(142, 125, 255, 0.2);
+     border-color: rgb(142, 125, 255); 
+}
+
+[data-entity][data-entity="drugchangestatusannotation"]::after {
+     background: rgb(142, 125, 255); 
+}
+
+[label="key"][data-entity="strengthannotation"] {
+     background: rgba(255, 204, 0, 0.2);
+     border-color: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="strengthannotation"]::after {
+     background: rgb(255, 204, 0); 
+}
+
+[label="key"][data-entity="requencyunitannotation"] {
+     background: rgba(255, 204, 0, 0.2);
+     border-color: rgb(255, 204, 0); 
+}
+
+[data-entity="requencyunitannotation"]::after {
+     background: rgb(255, 204, 0); 
+}
+
+[data-entity="diseasedisordermention"] {
+     background: rgba(255, 204, 0, 0.2);
+     border-color: rgb(255, 204, 0); 
+   
+
+}
+
+[data-entity="diseasedisordermention"]::after {
+     background: rgb(255, 204, 0); 
+}
+
+
+[data-entity="timemention"] {
+     background: rgba(47, 187, 171, 0.2);
+     border-color: rgb(47, 187, 171); 
+}
+
+[data-entity="timemention"]::after {
+     background: rgb(47, 187, 171); 
+}
+
+[data-entity="strengthunitannotation"] {
+     background: rgba(153, 153, 153, 0.2);
+     border-color: rgb(153, 153, 153); 
+}
+[data-entity="strengthunitannotation"]::after {
+     background: rgb(153, 153, 153); 
+}
+
+/* for expand words*/
+[label="expand"][data-entity="medicationmention"] {
+    
+     border-color: rgb(47, 187, 171); 
+      background: transparent;
+}
+
+
+
+[label="expand"][data-entity="signsymptommention"] {
+    
+     border-color: rgb(166, 226, 45); 
+      background: transparent;
+}
+
+
+[label="expand"][data-entity="proceduremention"] {
+     
+     border-color: rgb(224, 0, 132); 
+      background: transparent;
+}
+
+
+
+[label="expand"][data-entity="measurementannotation"] {
+      background: transparent;
+     border-color:: rgb(67, 198, 252); 
+}
+
+
+
+[label="expand"][data-entity="strengthunitannotation"] {
+    border-color:: rgb(67, 198, 252); 
+     background: transparent;
+}
+
+[label="expand"][data-entity="dateannotation"]{
+     border-color:: rgb(253, 151, 32); 
+      background: transparent;
+ }
+
+[label="expand"][data-entity="anatomicalsitemention"]{
+     border-color:: rgb(253, 151, 32); 
+      background: transparent
+}
+
+
+[label="expand"][data-entity="drugchangestatusannotation"] {
+     border-color:: rgb(142, 125, 255); 
+      background: transparent
+}
+
+
+
+[label="expand"][data-entity="strengthannotation"] {
+     border-color:: rgb(255, 204, 0); 
+      background: transparent
+}
+
+
+[label="expand"][data-entity="requencyunitannotation"]{
+    border-color:: rgb(255, 204, 0);
+     background: transparent;
+}
+
+
+
+[label="expand"][data-entity="diseasedisordermention"] {
+     border-color:: rgb(255, 204, 0);
+      background: transparent ;
+}
+
+
+
+
+[label="expand"][data-entity="timemention"] {
+     border-color:: rgb(47, 187, 171); 
+      background: transparent;
+}
+
+
+
+[label="expand"][data-entity="strengthunitannotation"] {
+      background: transparent;
+    border-color:: rgb(153, 153, 153); 
+}
+
+body {
+    padding: 25px 50px;
+    font: 18px Helvetica, Arial, sans-serif;
+}
+

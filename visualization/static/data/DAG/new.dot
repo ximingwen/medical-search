@@ -1,0 +1,9 @@
+digraph g {
+4 [ style=filled, fillcolor="aliceblue"];
+8 [ style=filled, fillcolor="aliceblue"];
+5 [ style=filled, fillcolor="aliceblue"];
+5 [ style=filled, fillcolor="aliceblue"];
+0 [ style=filled, fillcolor="aliceblue"];
+0 [ style=filled, fillcolor="aliceblue"];
+3 [ style=filled, fillcolor="aliceblue"];
+}

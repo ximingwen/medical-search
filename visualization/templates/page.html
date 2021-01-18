@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+
+ <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <link href="{% static 'css/page.css' %}" rel="stylesheet">
+    <title>分页</title>
+</head>
+<body>
+<div class="result">
+    found about {{num}} the most related results
+
+</div>
+
+ 
+
+
+    <div id="list" >
+
+        {% for essay in essays.content %}
+        <div id="essay">
+            <a href="https://pubmed.ncbi.nlm.nih.gov/{{essay.pmid.0}}/"><h1 id='title'>{{ essay.title.0 }} </h1></a>
+            {{essay.abstract.0|slice:"200"}}...
+         </div>
+        {% endfor %}
+       
+    </div>
+
+
+    <div id="pages" >
+            <ul>
+            {% if essays.has_previous %}
+               <li id='pre'>previous page
+               
+               </li>
+            {% endif %}
+             
+             
+            {% for page in essays.range %}
+                <li class='num' id='{{page}}'>{{ page }}</li>
+            {% endfor  %}
+
+
+              {% if essays.has_next %}
+                <li id='next'>next page</li>
+              {% endif  %}
+ 
+
+            </ul>
+      
+        
+    </div>
+
+
+
+  
+        
+    </div>
+   
+</body>
+<script>
+    var essays_updated;
+    var oli = document.getElementsByClassName("num");
+    for(var i=0; i<oli.length; i++){
+
+        $("body").delegate("#"+(i+1).toString(), "click", function(){ 
+        
+         var page=this.innerText;
+         get_data(page);
+ 　　　　 
+});
+       
+          
+        }
+
+        
+       
+
+$("#pages #next").click(function(){ 
+        
+         var page={{ essays.page }}+1;
+ 　　　　 get_data(page);
+       
+});
+
+
+
+
+
+
+$("body").delegate('#pages #pre-updated', "click", function(){ 
+        
+         var page=essays_updated.page-1;
+         get_data(page);
+ 　　　　 
+});
+
+$("body").delegate('#pages #next-updated', "click", function(){ 
+         
+          var page=essays_updated.page+1;
+          get_data(page);
+         
+
+      });
+  
+
+    function get_data(page){
+           $.ajax({type:"POST",
+                  url:"/page/",
+                  data:{"page":page},
+                   success:function(essays){
+                   
+                     var data = eval("("+essays+")").essays; 
+                      essays_updated=data;
+                   
+                   document.getElementById('list').innerHTML = "";
+
+                      data['content'].forEach(function(element){
+                    var essays=document.createElement("div");
+                    essays.setAttribute('id','essay');
+                    $('#list').append(essays);
+                    var link=document.createElement("a");
+                    link.setAttribute('href','https://pubmed.ncbi.nlm.nih.gov/'+element['pmid'][0]+'/');
+                    essays.append(link);
+                    var title=document.createElement("h1");
+                    title.innerText=element['title'][0];
+                    title.setAttribute('id','title');
+                    link.append(title);
+                    var abstract=document.createTextNode(element['abstract'][0].slice(0,200)+"...");
+                    essays.appendChild(abstract);
+
+                    
+                 });
+                 
+                   
+                
+                 document.getElementById('pages').innerHTML = "";
+                 var ul=document.createElement("ul");
+                  $('#pages').append(ul);
+
+                  if (data['has_previous']== true){
+                   
+                    var pre=document.createElement("li");
+                    pre.setAttribute('id','pre-updated');
+                    pre.innerText="previous page";
+                    $('ul').append(pre);
+
+                   }
+
+
+
+                   data['range'].forEach(function (page_num) {
+                     var num=document.createElement("li");
+                     num.innerText=page_num;
+                     num.setAttribute('class','num');
+                     num.setAttribute('id',page_num);
+                     if (page_num==page){
+                        num.setAttribute('id','current');
+
+                     }
+                    $('ul').append(num);
+                 });
+                      
+                      
+                      if (data['has_next']== true){
+                   
+                    var next=document.createElement("li");
+                    next.setAttribute('id','next-updated');
+                    next.innerText="next page";
+                    $('ul').append(next);
+
+
+                   } 
+                   }
+              });
+}
+
+
+                   
+
+
+
+
+</script>
+</html>
+

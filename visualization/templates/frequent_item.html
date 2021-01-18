@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+		<link rel="stylesheet" href="\static\css\jqtree.css" />
+<script src="\static\js\jquery.min.js"></script>
+<script src="\static\js\tree.jquery.js"></script>
+
+
+</head>
+<body>
+<div id="myTree"></div>
+
+</body>
+<script type="text/javascript">
+	const  items= {{ List|safe }}
+console.log(items)
+
+function sortdata(items)
+{
+ Array.prototype.forEach.call(items, child => {
+  sortdata(child.children)
+});
+
+ items.sort(function(first, second) {
+ return second.count - first.count;
+});
+
+
+}	
+
+
+
+Array.prototype.forEach.call(items, child => {
+  sortdata(child.children)
+});
+
+
+items.sort(function(first, second) {
+ return second.count - first.count;
+})
+/*	let root = document.createElement('ul');
+
+document.getElementById('myItemList').appendChild(root);
+
+items.forEach(function (item) {
+     var next_level_nodes=item["children"]
+     var concept=item["name"]
+     let parent = document.createElement('li');
+	    root.appendChild(parent);
+	    parent.innerHTML=concept;
+	    let childrens = document.createElement('ul');
+	    parent.appendChild(childrens)
+	 	next_level_nodes.forEach(function (item) {
+	 	let children = document.createElement('li');
+	    childrens.appendChild(children)
+	    children.innerHTML=item["name"]
+	});
+});*/
+
+	$("#myTree").tree({data: items});
+
+</script>
+</html>

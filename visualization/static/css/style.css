@@ -1,0 +1,31 @@
+
+
+[data-entity]{
+    line-height: 1;
+    display: inline-block;
+    background: transparent;
+    padding: 0 0.15em 0.15em 0.15em;
+    position: relative;
+    border-bottom: 3px solid;
+}
+[data-entity]::after {
+ 
+        box-sizing: border-box;
+        content: attr(data-entity);
+        line-height: 1;
+        display: inline-block;
+        font-size: 0.65em;
+        font-weight: bold;
+        text-transform: uppercase;
+        position: absolute;
+        bottom: -1.5em;
+        left: 0;
+        transition: opacity 0.25s ease  ;      
+    
+   }
+.entities{
+    font: 18px Arial, sans-serif;
+    padding: 25px 50px;
+    }
+
+    
