@@ -49,5 +49,5 @@ def solr_document_searcher(query_string, local):
 if __name__ == '__main__':
     query_string = 'abstract:nicotine^1.0 OR title:nicotine^1.0 OR abstract:tobacco^1.0 OR title:tobacco^1.0 OR abstract:pain^1.0 OR title:pain^1.0 OR abstract:opioid^5.0 OR title:opioid^5.0'
 
-    results = solr_document_searcher(query_string)
+    results = solr_document_searcher(query_string, False)
     print (json.dumps(results))

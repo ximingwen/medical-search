@@ -28,7 +28,7 @@ def collocation_snomed(request):
 	return render(request,'collocation_snomed.html')
 
 def snomed_hierarchy(request):
-	with open(".\\static\\data\\snomed_hierarchy.json", 'r') as f:
+	with open("/static/data/snomed_hierarchy.json", 'r') as f:
 		snomed_concepts = json.load(f)
 		return render(request,'snomed_hierarchy.html',{'Dict': json.dumps(snomed_concepts)})
 

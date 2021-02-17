@@ -46,10 +46,18 @@ def solr_query_builder(info_focus_dict):
 
     return query_string,set(key_terms)
 '''
+def load_stopwords():
+    stopword=set()
+    with open('./stopwords.txt') as f:
+      for word in f.readlines():
+          word=word.strip('\n')
+          stopword.add(word)
+    return stopword
+
 
 
 def solr_query_builder(info_focus_dict):
-
+    gl._init(load_stopwords(),"_stopwords")
     selfdefined_stopwords=gl.get_value("_stopwords")
     porter = PorterStemmer()
     '''
@@ -86,7 +94,7 @@ def solr_query_builder(info_focus_dict):
         key_terms.append(term)
  
     query_string = ' '.join(query_parts)
-
+    print(query_string)
 
     return query_string,set(key_terms)
 
@@ -100,11 +108,18 @@ def add_to_query_dic( query_dic,term,weight,stopwords,self_defined_stopwords):
             query_dic[term]=query_dic[term]+weight
 # Unit test
 if __name__ == '__main__':
-    info_focus_dict = {'concepts': [('health', 0), \
-                                    ('migraine', 1),
-                                    ('health center',2)
-
-                                   ] }
+    info_focus_dict = {
+        "event": [
+            {
+                "name": "back",
+                "importance": 5
+            },
+            {
+                "name": "pain",
+                "importance": 10
+            }
+        ]
+    }
     
     query_string = solr_query_builder(info_focus_dict)
-    print (query_string)
+    print(query_string)
