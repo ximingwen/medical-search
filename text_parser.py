@@ -53,19 +53,25 @@ class Concept(object):
         self.snomed_codes = set() # snomed-ct codes under this cui (can have more than one)
         self.mentions = set()     # string mentions in documents 
         self.pmids = set()        # pmid array, where this concept is mentioned
+        self.net_count = 0
+        self.clusters = set()
        
     
-    def __init__(self, cui, snomed_codes, mention, pmid):
+    def __init__(self, cui, snomed_codes, mention, pmid, net_count):
         self.cui = cui
         self.snomed_codes = set(snomed_codes)
         self.mentions = set([mention])
         self.pmids = set([pmid])
+        self.net_count = net_count
+        self.clusters = set()
       
 def concept2dic(concepts,json):
     for cui,concept in concepts.items():
         json[cui]={}
         json[cui]['mentions']=list(concept.mentions)
         json[cui]['pmids']=list(concept.pmids)
+        json[cui]['net_count'] = concept.net_count
+        json[cui]['clusters'] = list(concept.clusters)
       
     return json
 
@@ -82,12 +88,13 @@ def update_concept_set(concepts, step_code_string, pmid):
         cui=cui_snomed.split(";")[0]
         snomeds=cui_snomed.split(";")[2].split(",")
         if cui not in concepts:
-            concepts[cui] = Concept(cui,snomeds, text, pmid)
+            concepts[cui] = Concept(cui,snomeds, text, pmid, 1)
         else:
+            concepts[cui].mentions.add(text)
+            concepts[cui].pmids.add(pmid)
+            concepts[cui].net_count += 1
             for snomed in snomeds:
                 concepts[cui].snomed_codes.add(snomed)
-                concepts[cui].mentions.add(text)
-                concepts[cui].pmids.add(pmid)
                 
             
     return concepts

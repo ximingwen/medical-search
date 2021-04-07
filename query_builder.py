@@ -94,7 +94,7 @@ def solr_query_builder(info_focus_dict):
         key_terms.append(term)
  
     query_string = ' '.join(query_parts)
-    print(query_string)
+    # print(query_string)
 
     return query_string,set(key_terms)
 

@@ -37,7 +37,7 @@ class SearchAPI(Resource):
     def post(self):
         
         json_data = request.get_json(force=True)
-        print(json_data)
+        # print(json_data)
         is_valid, error_msg = is_valid_request(json_data)
         if is_valid:
             # step 1: build search string
@@ -47,10 +47,20 @@ class SearchAPI(Resource):
             solr_results = solr_document_searcher(query_string, False)
         
             #step 3: parse search results
-            top_k_docs = 20
+            top_k_docs = 100
             top_k_cons = 10
             cluster_field = ['title', 'abstract']
             concepts_original = search_result_parser(solr_results, True, top_k_docs)
+        
+            clustering_alg = json_data['clustering_algorithm']
+            num_clusters = json_data['num_clusters']
+            
+            clusters = search_result_clustering(solr_results, False, top_k_docs, cluster_field, clustering_alg, num_clusters)
+            # json2 = {}
+            # concepts_original_dict = concept2dic(concepts_original, json2)
+            # clusters = process_cluster_concept2(concepts_original_dict, clusters, 5)
+            clusters = process_cluster_concept(solr_results, clusters, 5, concepts_original)
+            
             all_concepts = dict(sorted(concepts_original.items(), key = lambda x: len(x[1].pmids), reverse = True))
             frequent_concepts={}
             terms=[]
@@ -63,22 +73,19 @@ class SearchAPI(Resource):
                     break
             json={}
             concepts=concept2dic(frequent_concepts,json)
-            clustering_alg = json_data['clustering_algorithm']
-            num_clusters = json_data['num_clusters']
             
-            clusters=search_result_clustering(solr_results, False, 100, cluster_field, clustering_alg, num_clusters)
-            concepts_original_dict = concept2dic(concepts_original, json)
-            # clusters = process_cluster_concept2(concepts_original_dict, clusters, 5)
-            clusters = process_cluster_concept(solr_results, clusters, 5)
             content={'solr_results':solr_results,
                     'concepts':concepts,
                     'clusters': clusters} 
             response=jsonify(content)
-            response.headers.add("Access-Control-Allow-Origin", "*")     
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            print(response)
             return response
 
         else:
-            return {"message": "Wrong JSON format: " + error_msg}
+            response = {"message": "Wrong JSON format: " + error_msg}
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response
 
         
 
