@@ -52,3 +52,11 @@ def get_score(
     p_x = float(global_obj.net_count/num_concepts_global)
     mi = p_xy * math.log(p_xy/p_x)
     return mi
+
+def get_kl(concept_obj, global_obj, cluster, num_concepts_global):
+    #   1) p_x|y
+    p_xy = float(concept_obj.net_count/cluster['concept_count'])
+    #   2) p_x
+    p_x = float(global_obj.net_count/num_concepts_global)
+    mi = p_xy * math.log(p_xy/p_x)
+    return mi

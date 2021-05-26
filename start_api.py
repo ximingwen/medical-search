@@ -32,6 +32,19 @@ def is_valid_request(json_data):
             return False, '"importance" value is not a valid number: "{}" in {}'.format(concept['importance'], concept)
     return True, ''
 
+def is_valid_request2(json_data):
+    if 'event' not in json_data:
+        return False, '"event" key is not in request json.'
+    for concept in json_data['event']:
+        if 'name' not in concept:
+            return False, '"name" key is not in concept {}'.format(concept)
+        if 'importance' not in concept:
+            return False, '"importance" key is not in {}'.format(concept)
+        try:
+            float(concept['importance'])
+        except:
+            return False, '"importance" value is not a valid number: "{}" in {}'.format(concept['importance'], concept)
+    return True, ''
 
 class SearchAPI(Resource):
     def post(self):
@@ -87,7 +100,28 @@ class SearchAPI(Resource):
             response.headers.add("Access-Control-Allow-Origin", "*")
             return response
 
-        
+class ConceptAPI(Resource):
+    def post(self):
+        json_data = request.get_json(force=True)
+        # json data should include solr_results, clusters, selected_clusters
+        # is_valid, error_msg = is_valid_request2(json_data)
+        is_valid = True
+        if is_valid:
+            top_k_docs = 100
+            solr_results = json_data['solr_results']
+            clusters = json_data['clusters']
+            selected_clusters = json_data['selected_clusters'] # a list of selected cluster ids
+            concepts_original = search_result_parser(solr_results, True, top_k_docs)
+            intersect_cluster = process_cluster_concept_one(solr_results, clusters, 5, concepts_original, selected_clusters)
+            content = {'intersect_cluster': intersect_cluster}
+            response=jsonify(content)
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            print(response)
+            return response
+        else:
+            response = {"message": "Wrong JSON format: " + error_msg}
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response
 
 '''
     info_focus_dict = {"event":[      
@@ -103,7 +137,7 @@ class SearchAPI(Resource):
 '''
      
 api.add_resource(SearchAPI, '/search/query')
-
+api.add_resource(ConceptAPI, '/search/cluster_score')
      
 if __name__ == '__main__':
     app.run(host="0.0.0.0",debug = True, port = 8983)
