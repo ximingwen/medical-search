@@ -10,15 +10,16 @@ SOLR_URL_PREFIX_LOCAL = 'http://localhost:12345/solr/MEDLINEv6/select'
 SOLR_URL_PREFIX_SERVER = 'http://10.4.80.108:8984/solr/MEDLINEv6/clustering'
 
 # this is a simple searcher just only returns the first 100 results
-def solr_document_searcher(query_string, local):
+def solr_document_searcher(query_string, local, num_docs):
     if local:
         SOLR_URL_PREFIX = SOLR_URL_PREFIX_LOCAL
     else:
         SOLR_URL_PREFIX = SOLR_URL_PREFIX_SERVER
     #clustering.engine=kmeans
     #'LingoClusteringAlgorithm.desiredClusterCountBase': '10'
-    payload = {'q': query_string, 'start': '0', 'rows': '100',"facet.field":"snomed_codes","facet":"on", 
-                'LingoClusteringAlgorithm.desiredClusterCountBase': 10, "carrot.snippet": "abstract", "carrot.title": "title"}
+    payload = {'q': query_string, 'start': '0', 'rows': num_docs,"facet.field":"snomed_codes","facet":"off"}
+    # payload = {'q': query_string, 'start': '0', 'rows': '100',"facet.field":"snomed_codes","facet":"on", 
+    #             'LingoClusteringAlgorithm.desiredClusterCountBase': 10, "carrot.snippet": "abstract", "carrot.title": "title"}
     r = requests.get(SOLR_URL_PREFIX, params=payload)
     print(payload)
 

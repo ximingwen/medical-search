@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request
 from flask_restful import reqparse, abort, Resource, Api
 from flask_cors import CORS
 import json
+import time
 import globalvar as gl
 
 from query_builder import solr_query_builder
@@ -12,6 +13,7 @@ from text_parser import search_result_parser
 from text_parser import concept2dic
 from carrot_clustering import search_result_clustering
 from cluster_concept import *
+from cluster_reorder import reorder_cluster
 
 app = Flask(__name__)
 api = Api(app)
@@ -57,23 +59,36 @@ class SearchAPI(Resource):
             query_string, key_terms = solr_query_builder(json_data)
 
             # step 2: search solr index
-            solr_results = solr_document_searcher(query_string, False)
-        
+            print(json_data['num_docs'])
+            t1 = time.time()
+            solr_results = solr_document_searcher(query_string, False, json_data['num_docs'])
+            t2 = time.time()
+            print(f"time to retreive: {t2 - t1}")
             #step 3: parse search results
-            top_k_docs = 100
+            top_k_docs = int(json_data['num_docs'])
+            # print(top_k_docs)
             top_k_cons = 10
             cluster_field = ['title', 'abstract']
             concepts_original = search_result_parser(solr_results, True, top_k_docs)
-        
+            t3 = time.time()
+            print(f"time to parse concepts: {t3 - t2}")
             clustering_alg = json_data['clustering_algorithm']
-            num_clusters = json_data['num_clusters']
+            num_clusters = int(json_data['num_clusters'])
             
             clusters = search_result_clustering(solr_results, False, top_k_docs, cluster_field, clustering_alg, num_clusters)
+            t4 = time.time()
+            print(f"time to clustering: {t4 - t3}")
+
+            reorder_index, idx_to_cluster1, idx_to_cluster2 = reorder_cluster(clusters)
+            cluster_idx = [int(idx) for idx in reorder_index]
+            idx_to_cluster1 = [int(idx) for idx in idx_to_cluster1]
+            idx_to_cluster2 = [int(idx) for idx in idx_to_cluster2]
             # json2 = {}
             # concepts_original_dict = concept2dic(concepts_original, json2)
             # clusters = process_cluster_concept2(concepts_original_dict, clusters, 5)
             clusters = process_cluster_concept(solr_results, clusters, 5, concepts_original)
-            
+            t5 = time.time()
+            print(f"time to collect cluster info: {t5 - t4}")
             all_concepts = dict(sorted(concepts_original.items(), key = lambda x: len(x[1].pmids), reverse = True))
             frequent_concepts={}
             terms=[]
@@ -89,7 +104,9 @@ class SearchAPI(Resource):
             
             content={'solr_results':solr_results,
                     'concepts':concepts,
-                    'clusters': clusters} 
+                    'clusters': clusters,
+                    "cluster_order": cluster_idx,
+                    "idx_to_cluster": [idx_to_cluster1, idx_to_cluster2]} 
             response=jsonify(content)
             response.headers.add("Access-Control-Allow-Origin", "*")
             print(response)
@@ -107,7 +124,7 @@ class ConceptAPI(Resource):
         # is_valid, error_msg = is_valid_request2(json_data)
         is_valid = True
         if is_valid:
-            top_k_docs = 100
+            top_k_docs = int(json_data['num_docs'])
             solr_results = json_data['solr_results']
             clusters = json_data['clusters']
             selected_clusters = json_data['selected_clusters'] # a list of selected cluster ids

@@ -16,9 +16,17 @@ def search_result_clustering(search_result, local, top_k_docs, field_list, algor
             doc_dict[field] = doc[field]
         doc_list.append(doc_dict)
     # may include other settings
-    parameters = {"desiredClusterCount": num_clusters}
+    # parameters = {"desiredClusterCount": num_clusters}
+    # print(algorithm)
+    if algorithm == "Lingo":
+        parameters = {"desiredClusterCount": num_clusters}
+    elif algorithm == "STC":
+        parameters = {"maxClusters": num_clusters}
+    elif algorithm == "Bisecting K-Means":
+        parameters = {"clusterCount": num_clusters}
     req_frame = {"algorithm": algorithm, "language": "English", "documents": doc_list, "parameters": parameters}
     r = requests.post(url, json=req_frame, headers={"Content-Type": "text/json"})
+    # print(r.json())
     clusters = r.json()['clusters']
     final_clusters = process_clusters(search_result, clusters, top_k_docs)
     return clusters

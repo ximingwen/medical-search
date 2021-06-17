@@ -152,7 +152,7 @@ def process_cluster_concept_one(solr_results, clusters, top_k, global_concepts, 
     sorted_concepts = dict(sorted(concepts.items(), key=lambda item: item[1].score, reverse = True))
     concepts_dict = {}
     for cui, concept_obj in sorted_concepts.items():
-        print(concept_obj.score)
+        # print(concept_obj.score)
         concepts_dict[cui] = concept_obj.to_json()
         if len(concepts_dict)==top_k:
             break

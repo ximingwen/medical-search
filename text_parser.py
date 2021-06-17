@@ -18,31 +18,31 @@ def search_result_parser(search_result,local,top_k_docs):
         title_ents=json.loads(doc['title_snomed_ents'])
         title_spans=[]
         for ent in title_ents:
-            concepts = update_concept_set(concepts, ent, pmid)
+            concepts, cui_list = update_concept_set(concepts, ent, pmid)
             span= ent[0:2]
-            title_spans.append(span)
+            title_spans.append({'span':span, 'cui_list': cui_list})
         doc['title_spans']=title_spans
         abstract_ents=json.loads(doc['abstract_snomed_ents'])
         abstract_spans=[]
         for ent in abstract_ents:
-            concepts = update_concept_set(concepts, ent, pmid)
+            concepts, cui_list = update_concept_set(concepts, ent, pmid)
             span=ent[0:2]
-            abstract_spans.append(span)
+            abstract_spans.append({'span':span, 'cui_list': cui_list})
         doc['abstract_spans']=abstract_spans
 
-    for doc in parsed_results['docs'][top_k_docs:]:
-        title_ents=json.loads(doc['title_snomed_ents'])
-        title_spans=[]
-        for ent in title_ents:
-            span= ent[0:2]
-            title_spans.append(span)
-        doc['title_spans']=title_spans
-        abstract_ents=json.loads(doc['abstract_snomed_ents'])
-        abstract_spans=[]
-        for ent in abstract_ents:
-            span=ent[0:2]
-            abstract_spans.append(span)
-        doc['abstract_spans']=abstract_spans
+    # for doc in parsed_results['docs'][top_k_docs:]:
+    #     title_ents=json.loads(doc['title_snomed_ents'])
+    #     title_spans=[]
+    #     for ent in title_ents:
+    #         span= ent[0:2]
+    #         title_spans.append(span)
+    #     doc['title_spans']=title_spans
+    #     abstract_ents=json.loads(doc['abstract_snomed_ents'])
+    #     abstract_spans=[]
+    #     for ent in abstract_ents:
+    #         span=ent[0:2]
+    #         abstract_spans.append(span)
+    #     doc['abstract_spans']=abstract_spans
     
     return concepts
 
@@ -84,8 +84,10 @@ def update_concept_set(concepts, step_code_string, pmid):
     text=text
     text=text[0].upper()+text[1:]
     cui_snomeds=step_code_string[2].split(".")
+    cui_list = []
     for cui_snomed in cui_snomeds:
         cui=cui_snomed.split(";")[0]
+        cui_list.append(cui)
         snomeds=cui_snomed.split(";")[2].split(",")
         if cui not in concepts:
             concepts[cui] = Concept(cui,snomeds, text, pmid, 1)
@@ -97,7 +99,7 @@ def update_concept_set(concepts, step_code_string, pmid):
                 concepts[cui].snomed_codes.add(snomed)
                 
             
-    return concepts
+    return concepts, cui_list
 '''
 def search_result_parser(search_result, key_terms, local):
 
