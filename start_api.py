@@ -14,6 +14,7 @@ from text_parser import concept2dic
 from carrot_clustering import search_result_clustering
 from cluster_concept import *
 from cluster_reorder import reorder_cluster
+from topic_2d import proj_cluster
 
 app = Flask(__name__)
 api = Api(app)
@@ -79,7 +80,8 @@ class SearchAPI(Resource):
             t4 = time.time()
             print(f"time to clustering: {t4 - t3}")
 
-            reorder_index, idx_to_cluster1, idx_to_cluster2 = reorder_cluster(clusters)
+            reorder_index, idx_to_cluster1, idx_to_cluster2, d3_json = reorder_cluster(clusters)
+            proj_cluster(clusters, idx_to_cluster1)
             cluster_idx = [int(idx) for idx in reorder_index]
             idx_to_cluster1 = [int(idx) for idx in idx_to_cluster1]
             idx_to_cluster2 = [int(idx) for idx in idx_to_cluster2]
@@ -106,7 +108,8 @@ class SearchAPI(Resource):
                     'concepts':concepts,
                     'clusters': clusters,
                     "cluster_order": cluster_idx,
-                    "idx_to_cluster": [idx_to_cluster1, idx_to_cluster2]} 
+                    "idx_to_cluster": [idx_to_cluster1, idx_to_cluster2],
+                    "d3_json": d3_json} 
             response=jsonify(content)
             response.headers.add("Access-Control-Allow-Origin", "*")
             print(response)

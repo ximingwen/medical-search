@@ -7,6 +7,8 @@ import time
 import scipy
 import scipy.cluster.hierarchy as sch
 import seaborn as sns
+from scipy.spatial.distance import squareform
+import functools
 
 def plot_headmap(corr_matrix, cluster_names, name):
     fig, ax = plt.subplots()
@@ -51,29 +53,6 @@ def cluster_to_matrix(clusters):
     # print(corr_matrix)
     return corr_matrix
 
-def plot_matrix_dendrogram(corr_array, linkage):
-    fig = plt.figure(figsize=(8,8))
-    ax1 = fig.add_axes([0.09,0.1,0.2,0.6])
-    
-    ax1.set_xticks([])
-    ax1.set_yticks([])
-
-    ax2 = fig.add_axes([0.3,0.71,0.6,0.2])
-    Z2 = sch.dendrogram(linkage)
-    ax2.set_xticks([])
-    ax2.set_yticks([])
-
-    axmatrix = fig.add_axes([0.3,0.1,0.6,0.6])
-    idx1 = Z2['leaves']
-    idx2 = Z2['leaves']
-    D = corr_array.copy()
-    D = D[idx1,:]
-    D = D[:,idx2]
-    im = axmatrix.imshow(D)
-    axmatrix.set_xticks([])
-    axmatrix.set_yticks([])
-    fig.savefig('dendrogram.png')
-    return idx1
 
 # cut by a set threshold
 def cluster_corr1(corr_array, inplace=False):
@@ -114,6 +93,37 @@ def cluster_corr1(corr_array, inplace=False):
     print(cluster_distance_threshold2)
     idx_to_cluster_array2 = sch.fcluster(linkage, cluster_distance_threshold2, 
                                         criterion='distance')
+    print(idx_to_cluster_array2)
+    # arranged by clusters
+    idx = np.argsort(idx_to_cluster_array1)
+    # print(idx)
+    
+    if not inplace:
+        corr_array = corr_array.copy()
+    
+    if isinstance(corr_array, pd.DataFrame):
+        return corr_array.iloc[idx, :].T.iloc[idx, :]
+    return corr_array[idx, :][:, idx], idx1, idx_to_cluster_array1, idx_to_cluster_array2
+
+# cut by max cluster
+def cluster_corr2(corr_array, inplace=False):
+    pairwise_distances = sch.distance.pdist(corr_array)
+    # print(pairwise_distances)
+    linkage = sch.linkage(pairwise_distances, method='complete')
+    idx1 = plot_matrix_dendrogram(corr_array, linkage)
+    # print(idx1)
+    # print(len(corr_array))
+    print(linkage)
+    max_cluster_threshold1 = int(len(corr_array)/3)
+    print(max_cluster_threshold1)
+    idx_to_cluster_array1 = sch.fcluster(linkage, max_cluster_threshold1, 
+                                        criterion='maxclust')
+    print(idx_to_cluster_array1)
+
+    max_cluster_threshold2 = int(len(corr_array)/5)
+    print(max_cluster_threshold2)
+    idx_to_cluster_array2 = sch.fcluster(linkage, max_cluster_threshold2, 
+                                        criterion='maxclust')
     print(idx_to_cluster_array2)
     # arranged by clusters
     idx = np.argsort(idx_to_cluster_array1)
@@ -169,27 +179,53 @@ def cluster_max_size(num_instance, linkage, max_size):
         connect_final(idx_to_cluster[:num_instance], idx_to_cluster[i], i)
     print(idx_to_cluster[:num_instance])
     return idx_to_cluster[:num_instance]
-       
+
+def corr_to_dist(corr_array):
+    print(corr_array)
+    dist_array = np.zeros(corr_array.shape)
+    for i in range(len(corr_array)):
+        for j in range(i, len(corr_array)):
+            dist_array[i, j] = corr_array[i, i] + corr_array[j, j] - 2 * corr_array[i, j]
+            dist_array[j, i] = corr_array[i, i] + corr_array[j, j] - 2 * corr_array[i, j]
+    print(dist_array)
+    dist_dense = squareform(dist_array)
+    return dist_dense
+
+def add_color(n, idx, color_list):
+    if len(n["children"]) == 0:
+        # leaf_pos = idx.index(n["node_id"])
+        n["color"] = color_list[n["node_id"]]
+    else:
+        for child in n["children"]:
+            add_color(child, idx, color_list)
+
 
 def cluster_corr3(corr_array, inplace=False):
-    pairwise_distances = sch.distance.pdist(corr_array)
+    # pairwise_distances = sch.distance.pdist(corr_array, 'cosine')
+    pairwise_distances = corr_to_dist(corr_array)
     # print(pairwise_distances)
     linkage = sch.linkage(pairwise_distances, method='complete')
     idx1 = plot_matrix_dendrogram(corr_array, linkage)
+    # print(sch.dendrogram(linkage))
+    # color_list = sch.dendrogram(linkage)['leaves_color_list']
+    d3_json = linkage_to_tree(linkage)
+    # add_color(d3_json, idx1, color_list)
     # print(idx1)
     # print(len(corr_array))
     # print(linkage)
-    for i in range(len(linkage)):
-        print(f"{len(corr_array) + i}: {linkage[i, :]}")
+    # for i in range(len(linkage)):
+    #     print(f"{len(corr_array) + i}: {linkage[i, :]}")
     cluster_distance_threshold1 = int(len(corr_array)/3)
-    print(cluster_distance_threshold1)
+    # print(cluster_distance_threshold1)
     idx_to_cluster_array1 = cluster_max_size(len(corr_array), linkage, cluster_distance_threshold1)
-    print(idx_to_cluster_array1)
-
+    idx_to_cluster1 = [int(idx) for idx in idx_to_cluster_array1]
+    print(idx_to_cluster1)
+    # print(idx_to_cluster_array1)
+    add_color(d3_json, idx1, idx_to_cluster1)
     cluster_distance_threshold2 = 2*int(len(corr_array)/3)
-    print(cluster_distance_threshold2)
+    # print(cluster_distance_threshold2)
     idx_to_cluster_array2 = cluster_max_size(len(corr_array), linkage, cluster_distance_threshold2)
-    print(idx_to_cluster_array2)
+    # print(idx_to_cluster_array2)
     # arranged by clusters
     idx = np.argsort(idx_to_cluster_array1)
     # print(idx)
@@ -199,52 +235,90 @@ def cluster_corr3(corr_array, inplace=False):
     
     if isinstance(corr_array, pd.DataFrame):
         return corr_array.iloc[idx, :].T.iloc[idx, :]
-    return corr_array[idx, :][:, idx], idx1, idx_to_cluster_array1, idx_to_cluster_array2
+    return corr_array[idx, :][:, idx], idx1, idx_to_cluster_array1, idx_to_cluster_array2, d3_json
 
-# cut by max cluster
-def cluster_corr2(corr_array, inplace=False):
-    pairwise_distances = sch.distance.pdist(corr_array)
-    # print(pairwise_distances)
-    linkage = sch.linkage(pairwise_distances, method='complete')
-    idx1 = plot_matrix_dendrogram(corr_array, linkage)
-    # print(idx1)
-    # print(len(corr_array))
-    print(linkage)
-    max_cluster_threshold1 = int(len(corr_array)/3)
-    print(max_cluster_threshold1)
-    idx_to_cluster_array1 = sch.fcluster(linkage, max_cluster_threshold1, 
-                                        criterion='maxclust')
-    print(idx_to_cluster_array1)
+# Create a nested dictionary from the ClusterNode's returned by SciPy
+def add_node(node, parent ):
+    # First create the new node and append it to its parent's children
+    newNode = dict( node_id=node.id, children=[] )
+    parent["children"].append( newNode )
 
-    max_cluster_threshold2 = int(len(corr_array)/5)
-    print(max_cluster_threshold2)
-    idx_to_cluster_array2 = sch.fcluster(linkage, max_cluster_threshold2, 
-                                        criterion='maxclust')
-    print(idx_to_cluster_array2)
-    # arranged by clusters
-    idx = np.argsort(idx_to_cluster_array1)
-    # print(idx)
+    # Recursively add the current node's children
+    if node.left: add_node( node.left, newNode )
+    if node.right: add_node( node.right, newNode )
+
+def linkage_to_tree(linkage):
+    T = sch.to_tree(linkage , rd=False )
+    d3Dendro = dict(children=[], name="Root1")
+    add_node( T, d3Dendro )
+    return d3Dendro
+
+def plot_matrix_dendrogram(corr_array, linkage):
+    fig = plt.figure(0, figsize=(8,8))
+    ax1 = fig.add_axes([0.09,0.1,0.2,0.6])
     
-    if not inplace:
-        corr_array = corr_array.copy()
-    
-    if isinstance(corr_array, pd.DataFrame):
-        return corr_array.iloc[idx, :].T.iloc[idx, :]
-    return corr_array[idx, :][:, idx], idx1, idx_to_cluster_array1, idx_to_cluster_array2
+    ax1.set_xticks([])
+    ax1.set_yticks([])
+
+    ax2 = fig.add_axes([0.3,0.71,0.6,0.2])
+    Z2 = sch.dendrogram(linkage)
+    ax2.set_xticks([])
+    ax2.set_yticks([])
+
+    axmatrix = fig.add_axes([0.3,0.1,0.6,0.6])
+    idx1 = Z2['leaves']
+    idx2 = Z2['leaves']
+    D = corr_array.copy()
+    D = D[idx1,:]
+    D = D[:,idx2]
+    im = axmatrix.imshow(D)
+    axmatrix.set_xticks([])
+    axmatrix.set_yticks([])
+    fig.savefig('dendrogram.png')
+    return idx1
+
+def label_tree( n, id2name, id2value):
+    # If the node is a leaf, then we have its name
+    if len(n["children"]) == 0:
+        leafNames = [ id2name[n["node_id"]] ]
+        n["name"] = leafNames[0]
+        n["value"] = id2value[n["node_id"]]
+    # else:
+        
+    #     n["name"] = str(n["node_id"])
+    # If not, flatten all the leaves in the node's subtree
+    else:
+        leafNames = functools.reduce(lambda ls, c: ls + label_tree(c, id2name, id2value), n["children"], [])
+
+    # Delete the node id since we don't need it anymore and
+    # it makes for cleaner JSON
+    # del n["node_id"]
+
+    # Labeling convention: "-"-separated leaf names
+    n["name"] = name = "-".join(sorted(map(str, leafNames)))
+
+    return leafNames
+
 
 def reorder_cluster(clusters):
     cluster_names = []
+    cluster_size = []
     for cluster in clusters:
         cluster_names.append(cluster['labels'][0])
+        cluster_size.append(len(cluster['documents']))
     corr_matrix = cluster_to_matrix(clusters)
     # print(corr_matrix.shape)
-    plot_headmap(corr_matrix, cluster_names, "before")
+    # plot_headmap(corr_matrix, cluster_names, "before")
     # sns.heatmap(corr_matrix)
-    new_corr_matrix, reorder_idx, idx_to_cluster1, idx_to_cluster2 = cluster_corr3(corr_matrix)
+    new_corr_matrix, reorder_idx, idx_to_cluster1, idx_to_cluster2, d3_json = cluster_corr3(corr_matrix)
+    print(d3_json)
     new_cluster_names = []
+    print(reorder_idx)
     for i in reorder_idx:
         new_cluster_names.append(cluster_names[i])
-    plot_headmap(new_corr_matrix, new_cluster_names, "after")
+    label_tree(d3_json, cluster_names, cluster_size)
+    print(d3_json['children'][0])
+    # plot_headmap(new_corr_matrix, new_cluster_names, "after")
     # print(new_corr_matrix)
     # sns.heatmap(new_corr_matrix)
-    return reorder_idx, idx_to_cluster1, idx_to_cluster2
+    return reorder_idx, idx_to_cluster1, idx_to_cluster2, d3_json['children'][0]
