@@ -210,8 +210,8 @@ def cluster_corr3(corr_array, inplace=False):
     idx_to_cluster_array1 = cluster_max_size(len(corr_array), linkage, cluster_distance_threshold1)
     unique_clusters = list(np.unique(idx_to_cluster_array1))
     idx_to_cluster1 = [unique_clusters.index(int(idx)) for idx in idx_to_cluster_array1]
-    print(idx_to_cluster_array1)
-    print(idx_to_cluster1)
+    # print(idx_to_cluster_array1)
+    # print(idx_to_cluster1)
     add_color(d3_json, idx1, idx_to_cluster1)
     # cluster_distance_threshold2 = 2*int(len(corr_array)/3)
     # idx_to_cluster_array2 = cluster_max_size(len(corr_array), linkage, cluster_distance_threshold2)
@@ -262,7 +262,7 @@ def plot_matrix_dendrogram(corr_array, linkage):
     im = axmatrix.imshow(D)
     axmatrix.set_xticks([])
     axmatrix.set_yticks([])
-    fig.savefig('dendrogram.png')
+    # fig.savefig('dendrogram.png')
     return idx1
 
 def label_tree( n, id2name, id2value):
@@ -299,13 +299,13 @@ def reorder_cluster(clusters):
     # plot_headmap(corr_matrix, cluster_names, "before")
     # sns.heatmap(corr_matrix)
     new_corr_matrix, reorder_idx, idx_to_cluster1, d3_json = cluster_corr3(corr_matrix)
-    print(d3_json)
+    # print(d3_json)
     new_cluster_names = []
-    print(reorder_idx)
+    # print(reorder_idx)
     for i in reorder_idx:
         new_cluster_names.append(cluster_names[i])
     label_tree(d3_json, cluster_names, cluster_size)
-    print(d3_json['children'][0])
+    # print(d3_json['children'][0])
     # plot_headmap(new_corr_matrix, new_cluster_names, "after")
     # print(new_corr_matrix)
     # sns.heatmap(new_corr_matrix)
