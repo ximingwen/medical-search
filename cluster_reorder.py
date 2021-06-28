@@ -174,20 +174,20 @@ def cluster_max_size(num_instance, linkage, max_size):
             #     idx2 = idx_to_cluster[int(row[1])]
             connect(idx_to_cluster, idx1, i + num_instance)
             connect(idx_to_cluster, idx1, idx2)
-    print(idx_to_cluster[:num_instance])
+    # print(idx_to_cluster[:num_instance])
     for i in range(num_instance):
         connect_final(idx_to_cluster[:num_instance], idx_to_cluster[i], i)
-    print(idx_to_cluster[:num_instance])
+    # print(idx_to_cluster[:num_instance])
     return idx_to_cluster[:num_instance]
 
 def corr_to_dist(corr_array):
-    print(corr_array)
+    # print(corr_array)
     dist_array = np.zeros(corr_array.shape)
     for i in range(len(corr_array)):
         for j in range(i, len(corr_array)):
             dist_array[i, j] = corr_array[i, i] + corr_array[j, j] - 2 * corr_array[i, j]
             dist_array[j, i] = corr_array[i, i] + corr_array[j, j] - 2 * corr_array[i, j]
-    print(dist_array)
+    # print(dist_array)
     dist_dense = squareform(dist_array)
     return dist_dense
 
@@ -203,39 +203,27 @@ def add_color(n, idx, color_list):
 def cluster_corr3(corr_array, inplace=False):
     # pairwise_distances = sch.distance.pdist(corr_array, 'cosine')
     pairwise_distances = corr_to_dist(corr_array)
-    # print(pairwise_distances)
     linkage = sch.linkage(pairwise_distances, method='complete')
     idx1 = plot_matrix_dendrogram(corr_array, linkage)
-    # print(sch.dendrogram(linkage))
-    # color_list = sch.dendrogram(linkage)['leaves_color_list']
     d3_json = linkage_to_tree(linkage)
-    # add_color(d3_json, idx1, color_list)
-    # print(idx1)
-    # print(len(corr_array))
-    # print(linkage)
-    # for i in range(len(linkage)):
-    #     print(f"{len(corr_array) + i}: {linkage[i, :]}")
     cluster_distance_threshold1 = int(len(corr_array)/3)
-    # print(cluster_distance_threshold1)
     idx_to_cluster_array1 = cluster_max_size(len(corr_array), linkage, cluster_distance_threshold1)
-    idx_to_cluster1 = [int(idx) for idx in idx_to_cluster_array1]
+    unique_clusters = list(np.unique(idx_to_cluster_array1))
+    idx_to_cluster1 = [unique_clusters.index(int(idx)) for idx in idx_to_cluster_array1]
+    print(idx_to_cluster_array1)
     print(idx_to_cluster1)
-    # print(idx_to_cluster_array1)
     add_color(d3_json, idx1, idx_to_cluster1)
-    cluster_distance_threshold2 = 2*int(len(corr_array)/3)
-    # print(cluster_distance_threshold2)
-    idx_to_cluster_array2 = cluster_max_size(len(corr_array), linkage, cluster_distance_threshold2)
-    # print(idx_to_cluster_array2)
+    # cluster_distance_threshold2 = 2*int(len(corr_array)/3)
+    # idx_to_cluster_array2 = cluster_max_size(len(corr_array), linkage, cluster_distance_threshold2)
     # arranged by clusters
     idx = np.argsort(idx_to_cluster_array1)
-    # print(idx)
     
     if not inplace:
         corr_array = corr_array.copy()
     
     if isinstance(corr_array, pd.DataFrame):
         return corr_array.iloc[idx, :].T.iloc[idx, :]
-    return corr_array[idx, :][:, idx], idx1, idx_to_cluster_array1, idx_to_cluster_array2, d3_json
+    return corr_array[idx, :][:, idx], idx1, idx_to_cluster1, d3_json
 
 # Create a nested dictionary from the ClusterNode's returned by SciPy
 def add_node(node, parent ):
@@ -310,7 +298,7 @@ def reorder_cluster(clusters):
     # print(corr_matrix.shape)
     # plot_headmap(corr_matrix, cluster_names, "before")
     # sns.heatmap(corr_matrix)
-    new_corr_matrix, reorder_idx, idx_to_cluster1, idx_to_cluster2, d3_json = cluster_corr3(corr_matrix)
+    new_corr_matrix, reorder_idx, idx_to_cluster1, d3_json = cluster_corr3(corr_matrix)
     print(d3_json)
     new_cluster_names = []
     print(reorder_idx)
@@ -321,4 +309,4 @@ def reorder_cluster(clusters):
     # plot_headmap(new_corr_matrix, new_cluster_names, "after")
     # print(new_corr_matrix)
     # sns.heatmap(new_corr_matrix)
-    return reorder_idx, idx_to_cluster1, idx_to_cluster2, d3_json['children'][0]
+    return reorder_idx, idx_to_cluster1, d3_json['children'][0]

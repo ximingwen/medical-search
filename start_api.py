@@ -80,11 +80,11 @@ class SearchAPI(Resource):
             t4 = time.time()
             print(f"time to clustering: {t4 - t3}")
 
-            reorder_index, idx_to_cluster1, idx_to_cluster2, d3_json = reorder_cluster(clusters)
-            proj_cluster(clusters, idx_to_cluster1)
+            reorder_index, idx_to_groups, d3_json = reorder_cluster(clusters)
+            # proj_cluster(clusters, idx_to_cluster1)
             cluster_idx = [int(idx) for idx in reorder_index]
-            idx_to_cluster1 = [int(idx) for idx in idx_to_cluster1]
-            idx_to_cluster2 = [int(idx) for idx in idx_to_cluster2]
+            # idx_to_cluster1 = [int(idx) for idx in idx_to_cluster1]
+            # idx_to_cluster2 = [int(idx) for idx in idx_to_cluster2]
             # json2 = {}
             # concepts_original_dict = concept2dic(concepts_original, json2)
             # clusters = process_cluster_concept2(concepts_original_dict, clusters, 5)
@@ -108,7 +108,7 @@ class SearchAPI(Resource):
                     'concepts':concepts,
                     'clusters': clusters,
                     "cluster_order": cluster_idx,
-                    "idx_to_cluster": [idx_to_cluster1, idx_to_cluster2],
+                    "idx_to_groups": idx_to_groups, # put clusters into groups, determine its color
                     "d3_json": d3_json} 
             response=jsonify(content)
             response.headers.add("Access-Control-Allow-Origin", "*")
