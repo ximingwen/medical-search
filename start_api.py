@@ -22,6 +22,8 @@ CORS(app)
 
 
 def is_valid_request(json_data):
+    if json_data['advanced']:
+        return True, ""
     if 'event' not in json_data:
         return False, '"event" key is not in request json.'
     for concept in json_data['event']:
@@ -56,8 +58,11 @@ class SearchAPI(Resource):
         # print(json_data)
         is_valid, error_msg = is_valid_request(json_data)
         if is_valid:
+            if json_data['advanced']:
+                query_string = json_data['advanced_query']
+            else:
             # step 1: build search string
-            query_string, key_terms = solr_query_builder(json_data)
+                query_string, key_terms = solr_query_builder(json_data)
 
             # step 2: search solr index
             print(json_data['num_docs'])
@@ -66,7 +71,7 @@ class SearchAPI(Resource):
             t2 = time.time()
             print(f"time to retreive: {t2 - t1}")
             #step 3: parse search results
-            top_k_docs = int(json_data['num_docs'])
+            top_k_docs = min(int(json_data['num_docs']), len(solr_results['response']['docs']))
             # print(top_k_docs)
             top_k_cons = 10
             cluster_field = ['title', 'abstract']
