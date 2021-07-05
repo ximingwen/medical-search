@@ -15,6 +15,7 @@ from carrot_clustering import search_result_clustering
 from cluster_concept import *
 from cluster_reorder import reorder_cluster
 from topic_2d import proj_cluster
+from highlight_labels import process_highlight
 
 app = Flask(__name__)
 api = Api(app)
@@ -148,6 +149,24 @@ class ConceptAPI(Resource):
             response.headers.add("Access-Control-Allow-Origin", "*")
             return response
 
+class HighlightLabelAPI(Resource):
+    def post(self):
+        json_data = request.get_json(force=True)
+        target_clusters = json_data['target_clusters']
+        print(target_clusters)
+        docs = json_data['docs']
+        if len(target_clusters)==0:
+            content = {"docs": docs}
+        else:
+            new_docs = []
+            for doc in docs:
+                nd = process_highlight(doc, target_clusters)
+                new_docs.append(nd)
+            content = {"docs": new_docs}
+        response = jsonify(content)
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
 '''
     info_focus_dict = {"event":[      
                           { 
@@ -163,6 +182,7 @@ class ConceptAPI(Resource):
      
 api.add_resource(SearchAPI, '/search/query')
 api.add_resource(ConceptAPI, '/search/cluster_score')
+api.add_resource(HighlightLabelAPI, '/search/highlight_label')
      
 if __name__ == '__main__':
     app.run(host="0.0.0.0",debug = True, port = 8983)
