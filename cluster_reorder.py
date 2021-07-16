@@ -242,26 +242,26 @@ def linkage_to_tree(linkage):
     return d3Dendro
 
 def plot_matrix_dendrogram(corr_array, linkage):
-    fig = plt.figure(0, figsize=(8,8))
-    ax1 = fig.add_axes([0.09,0.1,0.2,0.6])
+    # fig = plt.figure(0, figsize=(8,8))
+    # ax1 = fig.add_axes([0.09,0.1,0.2,0.6])
     
-    ax1.set_xticks([])
-    ax1.set_yticks([])
+    # ax1.set_xticks([])
+    # ax1.set_yticks([])
 
-    ax2 = fig.add_axes([0.3,0.71,0.6,0.2])
+    # ax2 = fig.add_axes([0.3,0.71,0.6,0.2])
     Z2 = sch.dendrogram(linkage)
-    ax2.set_xticks([])
-    ax2.set_yticks([])
+    # ax2.set_xticks([])
+    # ax2.set_yticks([])
 
-    axmatrix = fig.add_axes([0.3,0.1,0.6,0.6])
+    # axmatrix = fig.add_axes([0.3,0.1,0.6,0.6])
     idx1 = Z2['leaves']
     idx2 = Z2['leaves']
     D = corr_array.copy()
     D = D[idx1,:]
     D = D[:,idx2]
-    im = axmatrix.imshow(D)
-    axmatrix.set_xticks([])
-    axmatrix.set_yticks([])
+    # im = axmatrix.imshow(D)
+    # axmatrix.set_xticks([])
+    # axmatrix.set_yticks([])
     # fig.savefig('dendrogram.png')
     return idx1
 

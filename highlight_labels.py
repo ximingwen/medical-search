@@ -22,7 +22,7 @@ def process_highlight(doc, target_clusters):
         tw = tw.translate(str.maketrans('', '', string.punctuation))
         title_words.append(stemmer.stem(tw.strip()))
     for tc in target_clusters:
-        label_string = tc['labels'].lower()
+        label_string = tc['labels'].lower().translate(str.maketrans('', '', string.punctuation))
         # print(label_string)
         label_words = word_tokenize(label_string)
         filter_words = []

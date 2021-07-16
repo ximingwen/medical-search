@@ -6,8 +6,8 @@ import json
 import unicodedata
 import globalvar as gl
 
-SOLR_URL_PREFIX_LOCAL = 'http://localhost:12345/solr/MEDLINEv6/select'
-SOLR_URL_PREFIX_SERVER = 'http://10.4.80.108:8984/solr/MEDLINEv6/clustering'
+SOLR_URL_PREFIX_LOCAL = 'http://localhost:12345/solr/MEDLINEv2107/select'
+SOLR_URL_PREFIX_SERVER = 'http://10.4.80.108:8984/solr/MEDLINEv2107/select'
 
 # this is a simple searcher just only returns the first 100 results
 def solr_document_searcher(query_string, local, num_docs):
@@ -22,7 +22,6 @@ def solr_document_searcher(query_string, local, num_docs):
     #             'LingoClusteringAlgorithm.desiredClusterCountBase': 10, "carrot.snippet": "abstract", "carrot.title": "title"}
     r = requests.get(SOLR_URL_PREFIX, params=payload)
     print(payload)
-
     search_result = r.json()
     '''
     assert 'response' in search_result, \
@@ -38,8 +37,11 @@ def solr_document_searcher(query_string, local, num_docs):
             json.dump(search_result, f)
         response = search_result['response']
         for i in range(len(response['docs'])):
-            abstract = response['docs'][i]['abstract'][0]
-            response['docs'][i]['abstract'][0] = unicodedata.normalize("NFD", abstract)
+            if 'abstract' in response['docs'][i]:
+                abstract = response['docs'][i]['abstract'][0]
+            else:
+                abstract = 'ABSTRACT_NOT_AVAILABLE'
+            response['docs'][i]['abstract'] = [unicodedata.normalize("NFD", abstract)]
 
             title = response['docs'][i]['title'][0]
             response['docs'][i]['title'][0] = unicodedata.normalize("NFD", title)

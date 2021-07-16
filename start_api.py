@@ -16,6 +16,9 @@ from cluster_concept import *
 from cluster_reorder import reorder_cluster
 from topic_2d import proj_cluster
 from highlight_labels import process_highlight
+from concept_cluster import concept_clustering
+from phrase_parser import search_phrase_parser
+from concept_summary import extract_sent_candids, generate_summary
 
 app = Flask(__name__)
 api = Api(app)
@@ -61,14 +64,16 @@ class SearchAPI(Resource):
         if is_valid:
             if json_data['advanced']:
                 query_string = json_data['advanced_query']
+                free_text = json_data['free_text_query']
             else:
             # step 1: build search string
-                query_string, key_terms = solr_query_builder(json_data)
-
+                query_string, free_text = solr_query_builder(json_data)
             # step 2: search solr index
             print(json_data['num_docs'])
             t1 = time.time()
+            # TODO
             solr_results = solr_document_searcher(query_string, False, json_data['num_docs'])
+            print(len(solr_results['response']['docs']))
             t2 = time.time()
             print(f"time to retreive: {t2 - t1}")
             #step 3: parse search results
@@ -77,15 +82,26 @@ class SearchAPI(Resource):
             top_k_cons = 10
             cluster_field = ['title', 'abstract']
             concepts_original = search_result_parser(solr_results, True, top_k_docs)
+            phrases = search_phrase_parser(solr_results, True, top_k_docs)
             t3 = time.time()
             print(f"time to parse concepts: {t3 - t2}")
             clustering_alg = json_data['clustering_algorithm']
             num_clusters = int(json_data['num_clusters'])
-            
-            clusters = search_result_clustering(solr_results, False, top_k_docs, cluster_field, clustering_alg, num_clusters)
+            if json_data['snomed']:
+                clusters = concept_clustering(concepts_original, num_clusters, top_k_docs)
+            else:
+                clusters = concept_clustering(phrases, num_clusters, top_k_docs)
+            # clusters = search_result_clustering(solr_results, False, top_k_docs, cluster_field, clustering_alg, num_clusters)
             t4 = time.time()
             print(f"time to clustering: {t4 - t3}")
 
+            for cluster in clusters:
+                name = cluster['labels'][0]
+                summary = generate_summary(free_text, cluster['documents'], cluster['cid'], solr_results['response']['docs'], 3, snomed=json_data['snomed'])
+                cluster['summary'] = summary
+
+            t5 = time.time()
+            print(f"time to generate summary: {t5 - t4}")
             reorder_index, idx_to_groups, d3_json = reorder_cluster(clusters)
             # proj_cluster(clusters, idx_to_cluster1)
             cluster_idx = [int(idx) for idx in reorder_index]
@@ -95,8 +111,9 @@ class SearchAPI(Resource):
             # concepts_original_dict = concept2dic(concepts_original, json2)
             # clusters = process_cluster_concept2(concepts_original_dict, clusters, 5)
             clusters = process_cluster_concept(solr_results, clusters, 5, concepts_original)
-            t5 = time.time()
-            print(f"time to collect cluster info: {t5 - t4}")
+            t6 = time.time()
+            print(f"time to collect cluster info: {t6 - t5}")
+            print(f"total: {t6 - t1}")
             all_concepts = dict(sorted(concepts_original.items(), key = lambda x: len(x[1].pmids), reverse = True))
             frequent_concepts={}
             terms=[]

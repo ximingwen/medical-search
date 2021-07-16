@@ -9,48 +9,38 @@ from nltk.stem import PorterStemmer
 
 #CTAKES_URL_PREFIX_LOCAL = 'http://localhost:12346/ctakes-web-rest/service/analyze?pipeline=Default'
 #CTAKES_URL_PREFIX_SERVER = 'http://localhost:8080/ctakes-web-rest/service/analyze?pipeline=Default'
-def search_result_parser(search_result,local,top_k_docs):
+def search_phrase_parser(search_result,local,top_k_docs):
     porter = PorterStemmer()
     parsed_results = search_result['response']
     concepts = {}
     for i, doc in enumerate(parsed_results['docs'][:top_k_docs]):
         pmid = doc['pmid']
-        title_ents=json.loads(doc['title_snomed_ents'])
+        title_ents=json.loads(doc['title_aps'])
         title_spans=[]
         for ent in title_ents:
-            concepts, cui_list = update_concept_set(concepts, ent, pmid, i)
-            span= ent[0:2]
-            title_spans.append({'span':span, 'cui_list': cui_list})
-        doc['title_spans']=title_spans
-        abstract_ents=json.loads(doc['abstract_snomed_ents'])
+            concepts, pid = update_concept_set(concepts, ent, pmid, i)
+            pid_int = int(pid[2:])
+            if pid_int <= 200000:
+                span= ent[0:2]
+                title_spans.append({'span':span, 'cui_list': [pid]})
+        doc['title_phrase_spans']=title_spans
+        abstract_ents=json.loads(doc['abstract_aps'])
         abstract_spans=[]
         for ent in abstract_ents:
-            concepts, cui_list = update_concept_set(concepts, ent, pmid, i)
-            span=ent[0:2]
-            abstract_spans.append({'span':span, 'cui_list': cui_list})
-        doc['abstract_spans']=abstract_spans
-
-    # for doc in parsed_results['docs'][top_k_docs:]:
-    #     title_ents=json.loads(doc['title_snomed_ents'])
-    #     title_spans=[]
-    #     for ent in title_ents:
-    #         span= ent[0:2]
-    #         title_spans.append(span)
-    #     doc['title_spans']=title_spans
-    #     abstract_ents=json.loads(doc['abstract_snomed_ents'])
-    #     abstract_spans=[]
-    #     for ent in abstract_ents:
-    #         span=ent[0:2]
-    #         abstract_spans.append(span)
-    #     doc['abstract_spans']=abstract_spans
-    
+            concepts, pid = update_concept_set(concepts, ent, pmid, i)
+            pid_int = int(pid[2:])
+            if pid_int <= 200000:
+                span=ent[0:2]
+                abstract_spans.append({'span':span, 'cui_list': [pid]})
+        doc['abstract_phrase_spans']=abstract_spans
+    concepts = {k: v for k, v in sorted(concepts.items(), key=lambda item: len(item[1].docids), reverse=True)[:min(5000, len(concepts.items()))]}
+    print(len(concepts))
     return concepts
 
 
 class Concept(object):
     def __init__(self):
-        self.cui = ''             # cui of this concept
-        self.snomed_codes = set() # snomed-ct codes under this cui (can have more than one)
+        self.pid = ''             # pid of this concept
         self.mentions = set()     # string mentions in documents 
         self.pmids = set()        # pmid array, where this concept is mentioned
         self.net_count = 0
@@ -58,9 +48,8 @@ class Concept(object):
         self.docids = set()
        
     
-    def __init__(self, cui, snomed_codes, mention, pmid, net_count, docids):
-        self.cui = cui
-        self.snomed_codes = set(snomed_codes)
+    def __init__(self, pid, mention, pmid, net_count, docids):
+        self.pid = pid
         self.mentions = set([mention])
         self.pmids = set([pmid])
         self.net_count = net_count
@@ -68,12 +57,12 @@ class Concept(object):
         self.docids = set([docids])
       
 def concept2dic(concepts,json):
-    for cui,concept in concepts.items():
-        json[cui]={}
-        json[cui]['mentions']=list(concept.mentions)
-        json[cui]['pmids']=list(concept.pmids)
-        json[cui]['net_count'] = concept.net_count
-        json[cui]['clusters'] = list(concept.clusters)
+    for pid,concept in concepts.items():
+        json[pid]={}
+        json[pid]['mentions']=list(concept.mentions)
+        json[pid]['pmids']=list(concept.pmids)
+        json[pid]['net_count'] = concept.net_count
+        json[pid]['clusters'] = list(concept.clusters)
       
     return json
 
@@ -85,24 +74,17 @@ def update_concept_set(concepts, step_code_string, pmid, docid):
     #for each in punctuation:
     text=text
     text=text[0].upper()+text[1:]
-    cui_snomeds=step_code_string[2].split(".")
-    cui_list = []
-    for cui_snomed in cui_snomeds:
-        cui=cui_snomed.split(";")[0]
-        cui_list.append(cui)
-        snomeds=cui_snomed.split(";")[2].split(",")
-        if cui not in concepts:
-            concepts[cui] = Concept(cui,snomeds, text, pmid, 1, docid)
-        else:
-            concepts[cui].mentions.add(text)
-            concepts[cui].pmids.add(pmid)
-            concepts[cui].docids.add(docid)
-            concepts[cui].net_count += 1
-            for snomed in snomeds:
-                concepts[cui].snomed_codes.add(snomed)
-                
-            
-    return concepts, cui_list
+    pid=step_code_string[2]
+    pid_int = int(pid[2:])
+    if pid_int > 200000:
+        return concepts, pid
+    if pid not in concepts:
+        concepts[pid] = Concept(pid, text, pmid, 1, docid)
+    else:
+        concepts[pid].pmids.add(pmid)
+        concepts[pid].docids.add(docid)
+        concepts[pid].net_count += 1
+    return concepts, pid
 '''
 def search_result_parser(search_result, key_terms, local):
 

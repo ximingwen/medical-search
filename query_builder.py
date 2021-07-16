@@ -91,12 +91,13 @@ def solr_query_builder(info_focus_dict):
     for key, value in query_dic.items():
         query_parts.append('abstract:'+key+ '^' + str(value))
         query_parts.append('title:' + key+ '^' + str(value))
-        key_terms.append(term)
+        key_terms.append(key)
  
     query_string = ' '.join(query_parts)
+    free_text_query = ' '.join(key_terms)
     # print(query_string)
 
-    return query_string,set(key_terms)
+    return query_string,free_text_query
 
 
 def add_to_query_dic( query_dic,term,weight,stopwords,self_defined_stopwords):
