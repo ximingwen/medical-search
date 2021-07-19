@@ -26,6 +26,7 @@ def concept_clustering(concepts, num_clusters, top_k_docs):
         new_concept_id = select_concept(concepts, cui_list, selected_concept, cooccur_mat, l, top_k_docs)
         selected_concept.append(new_concept_id)
     clusters = []
+    print(selected_concept)
     for c in selected_concept:
         c_object = concepts[cui_list[c]]
         labels = []

@@ -34,7 +34,6 @@ def search_phrase_parser(search_result,local,top_k_docs):
                 abstract_spans.append({'span':span, 'cui_list': [pid]})
         doc['abstract_phrase_spans']=abstract_spans
     concepts = {k: v for k, v in sorted(concepts.items(), key=lambda item: len(item[1].docids), reverse=True)[:min(5000, len(concepts.items()))]}
-    print(len(concepts))
     return concepts
 
 

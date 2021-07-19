@@ -87,17 +87,18 @@ class SearchAPI(Resource):
             print(f"time to parse concepts: {t3 - t2}")
             clustering_alg = json_data['clustering_algorithm']
             num_clusters = int(json_data['num_clusters'])
-            if json_data['snomed']:
+            if json_data['snomed']==0:
                 clusters = concept_clustering(concepts_original, num_clusters, top_k_docs)
-            else:
+            elif json_data['snomed']==1:
                 clusters = concept_clustering(phrases, num_clusters, top_k_docs)
-            # clusters = search_result_clustering(solr_results, False, top_k_docs, cluster_field, clustering_alg, num_clusters)
+            else:
+                clusters = search_result_clustering(solr_results, False, top_k_docs, cluster_field, clustering_alg, num_clusters)
             t4 = time.time()
             print(f"time to clustering: {t4 - t3}")
-
+            print(len(clusters))
             for cluster in clusters:
                 name = cluster['labels'][0]
-                summary = generate_summary(free_text, cluster['documents'], cluster['cid'], solr_results['response']['docs'], 3, snomed=json_data['snomed'])
+                summary = generate_summary(free_text, cluster['documents'], cluster['cid'], solr_results['response']['docs'], 3, snomed=(json_data['snomed']==0))
                 cluster['summary'] = summary
 
             t5 = time.time()

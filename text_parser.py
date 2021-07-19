@@ -43,7 +43,7 @@ def search_result_parser(search_result,local,top_k_docs):
     #         span=ent[0:2]
     #         abstract_spans.append(span)
     #     doc['abstract_spans']=abstract_spans
-    
+    concepts = {k: v for k, v in sorted(concepts.items(), key=lambda item: len(item[1].docids), reverse=True)} 
     return concepts
 
 
@@ -100,8 +100,7 @@ def update_concept_set(concepts, step_code_string, pmid, docid):
             concepts[cui].net_count += 1
             for snomed in snomeds:
                 concepts[cui].snomed_codes.add(snomed)
-                
-            
+                  
     return concepts, cui_list
 '''
 def search_result_parser(search_result, key_terms, local):
