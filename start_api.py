@@ -1,8 +1,9 @@
 # This is the RESTful API module
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from flask_restful import reqparse, abort, Resource, Api
 from flask_cors import CORS
+from flask_session import Session
 import json
 import time
 import globalvar as gl
@@ -21,6 +22,10 @@ from phrase_parser import search_phrase_parser
 from concept_summary import extract_sent_candids, generate_summary
 
 app = Flask(__name__)
+SESSION_TYPE = 'redis'
+app.config.from_object(__name__)
+app.secret_key = 'BAD_SECRET_KEY'
+Session(app)
 api = Api(app)
 CORS(app)
 
@@ -73,7 +78,6 @@ class SearchAPI(Resource):
             t1 = time.time()
             # TODO
             solr_results = solr_document_searcher(query_string, False, json_data['num_docs'])
-            print(len(solr_results['response']['docs']))
             t2 = time.time()
             print(f"time to retreive: {t2 - t1}")
             #step 3: parse search results
@@ -115,25 +119,34 @@ class SearchAPI(Resource):
             t6 = time.time()
             print(f"time to collect cluster info: {t6 - t5}")
             print(f"total: {t6 - t1}")
-            all_concepts = dict(sorted(concepts_original.items(), key = lambda x: len(x[1].pmids), reverse = True))
-            frequent_concepts={}
-            terms=[]
-            for cui,concept in all_concepts.items():
-                term=list(concept.mentions)[0]
-                if term not in terms:
-                    terms.append(term)
-                    frequent_concepts[cui]=concept
-                if len(terms)==top_k_cons:
-                    break
-            json={}
-            concepts=concept2dic(frequent_concepts,json)
+            # all_concepts = dict(sorted(concepts_original.items(), key = lambda x: len(x[1].pmids), reverse = True))
+            # frequent_concepts={}
+            # terms=[]
+            # for cui,concept in all_concepts.items():
+            #     term=list(concept.mentions)[0]
+            #     if term not in terms:
+            #         terms.append(term)
+            #         frequent_concepts[cui]=concept
+            #     if len(terms)==top_k_cons:
+            #         break
+            # json={}
+            # concepts=concept2dic(frequent_concepts,json)
             
             content={'solr_results':solr_results,
-                    'concepts':concepts,
                     'clusters': clusters,
                     "cluster_order": cluster_idx,
                     "idx_to_groups": idx_to_groups, # put clusters into groups, determine its color
-                    "d3_json": d3_json} 
+                    "d3_json": d3_json}
+            session['solr_results'] = solr_results
+            print(len(session['solr_results']['response']['docs']))
+            session['clusters'] = clusters
+            print(len(session['clusters']))
+            session['cluster_order'] = cluster_idx
+            # session['concepts_original'] = concepts_original
+            session['idx_to_groups'] = idx_to_groups
+            session['d3_json'] = d3_json
+            session['must_include'] = []
+            session['must_exclude'] = []
             response=jsonify(content)
             response.headers.add("Access-Control-Allow-Origin", "*")
             print(response)
@@ -141,6 +154,30 @@ class SearchAPI(Resource):
 
         else:
             response = {"message": "Wrong JSON format: " + error_msg}
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response
+
+class EditClusterAPI(Resource):
+    def post(self):
+        json_data = request.get_json(force=True)
+        is_valid = True
+        if is_valid:
+            if json_data['action']=='delete':
+                # session['must_exclude'].append(json_data['cid'])
+                print(session.get('clusters'))
+                print(len(session['clusters']))
+                print(session['must_exclude'])
+            else:
+                session['must_include'].append(json_data['cid'])
+                print(len(session['clusters']))
+                print(session['must_include'])
+            content = {
+                'clusters': session['clusters'],
+                "cluster_order": session['cluster_order'],
+                "idx_to_groups": session['idx_to_groups'], # put clusters into groups, determine its color
+                "d3_json": session['d3_json']
+            }
+            response = jsonify(content)
             response.headers.add("Access-Control-Allow-Origin", "*")
             return response
 
@@ -201,6 +238,7 @@ class HighlightLabelAPI(Resource):
 api.add_resource(SearchAPI, '/search/query')
 api.add_resource(ConceptAPI, '/search/cluster_score')
 api.add_resource(HighlightLabelAPI, '/search/highlight_label')
+api.add_resource(EditClusterAPI, '/search/edit_cluster')
      
 if __name__ == '__main__':
     app.run(host="0.0.0.0",debug = True, port = 8983)

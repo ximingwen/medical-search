@@ -74,7 +74,7 @@ def concept2dic(concepts,json):
         json[cui]['pmids']=list(concept.pmids)
         json[cui]['net_count'] = concept.net_count
         json[cui]['clusters'] = list(concept.clusters)
-      
+        json[cui]['docids'] = list(concept.docids)
     return json
 
 

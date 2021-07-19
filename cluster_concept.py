@@ -57,7 +57,6 @@ def update_concept_cluster(concepts, step_code_string, pmid):
 
 
 def process_cluster_concept(solr_results, all_clusters, top_k, global_concepts):
-    parsed_results = solr_results['response']
     all_docs = solr_results['response']['docs']
     N = len(all_docs) # total number of docs
 
@@ -109,7 +108,6 @@ def process_cluster_concept(solr_results, all_clusters, top_k, global_concepts):
 # right now, only process the case when there are more than two selected clusters
 # if there is only one, we can directly get the recommendation list from the original list
 def process_cluster_concept_one(solr_results, clusters, top_k, global_concepts, selected_clusters):
-    parsed_results = solr_results['response']
     all_docs = solr_results['response']['docs']
 
     # collect doc id
