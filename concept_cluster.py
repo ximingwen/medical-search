@@ -73,3 +73,36 @@ def select_concept(concepts, cui_list, selected_concept, cooccur_mat, l, top_k_d
             # print(i, best_score)
     return best_concept
 
+def edit_cluster(current_clusters, concepts, must_exclude, top_k_docs):
+    cui_list = []
+    selected_concept = []
+    for cui in concepts:
+        if cui not in must_exclude:
+            cui_list.append(cui)
+    cooccur_mat = -np.ones((len(cui_list), len(cui_list)), dtype=np.int)
+    for cluster in current_clusters:
+        if cluster['cid'] not in must_exclude:
+            selected_concept.append(cui_list.index(cluster['cid']))
+    for i in range(len(cui_list)):
+        cooccur_mat[i, i] = len(concepts[cui_list[i]].docids)
+        # for j in range(i, len(cui_list)):
+        #     cooccur_mat[i, j] = len(concepts[cui_list[i]].docids.intersection(concepts[cui_list[j]].docids))
+        #     cooccur_mat[j, i] = len(concepts[cui_list[i]].docids.intersection(concepts[cui_list[j]].docids))
+    l = 0.5
+    new_concept_id = select_concept(concepts, cui_list, selected_concept, cooccur_mat, l, top_k_docs)
+    selected_concept.append(new_concept_id)
+    clusters = [cluster for cluster in current_clusters if cluster['cid'] not in must_exclude]
+    c_object = concepts[cui_list[new_concept_id]]
+    labels = []
+    lower_labels = []
+    for label in list(c_object.mentions):
+        if label.lower() not in lower_labels:
+            labels.append(label)
+            lower_labels.append(label.lower())
+    c_dict = {
+        "labels": labels,
+        "documents": list(c_object.docids),
+        "cid": cui_list[new_concept_id]
+    }
+    clusters.append(c_dict)
+    return clusters
