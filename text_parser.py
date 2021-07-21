@@ -61,13 +61,14 @@ class Concept(object):
     def __init__(self, cui, snomed_codes, mention, pmid, net_count, docids):
         self.cui = cui
         self.snomed_codes = set(snomed_codes)
-        self.mentions = set([mention])
-        self.pmids = set([pmid])
+        self.mentions = set(mention)
+        self.pmids = set(pmid)
         self.net_count = net_count
         self.clusters = set()
-        self.docids = set([docids])
+        self.docids = set(docids)
       
-def concept2dic(concepts,json):
+def concept2dic(concepts):
+    json = {}
     for cui,concept in concepts.items():
         json[cui]={}
         json[cui]['mentions']=list(concept.mentions)
@@ -77,6 +78,18 @@ def concept2dic(concepts,json):
         json[cui]['docids'] = list(concept.docids)
     return json
 
+def dic2concept(concepts_json):
+    concepts = {}
+    for cui,concept in concepts_json.items():
+        c_object = Concept(cui, [], concept['mentions'], concept['pmids'], concept['net_count'], concept['docids'])
+        # c_object.cui = cui
+        # c_object.mentions = set(concept['mentions'])
+        # c_object.pmids = set(concept['pmids'])
+        # c_object.net_count = concept['ned_count']
+        # c_object.clusters = set(concept['clusters'])
+        # c_object.docids = set(concept['docids'])
+        concepts[cui] = c_object
+    return concepts
 
 
 def update_concept_set(concepts, step_code_string, pmid, docid):
@@ -92,7 +105,7 @@ def update_concept_set(concepts, step_code_string, pmid, docid):
         cui_list.append(cui)
         snomeds=cui_snomed.split(";")[2].split(",")
         if cui not in concepts:
-            concepts[cui] = Concept(cui,snomeds, text, pmid, 1, docid)
+            concepts[cui] = Concept(cui,snomeds, [text], [pmid], 1, [docid])
         else:
             concepts[cui].mentions.add(text)
             concepts[cui].pmids.add(pmid)

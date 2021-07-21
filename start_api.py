@@ -11,7 +11,7 @@ import globalvar as gl
 from query_builder import solr_query_builder
 from document_searcher import solr_document_searcher
 from text_parser import search_result_parser
-from text_parser import concept2dic
+from text_parser import concept2dic, dic2concept
 from carrot_clustering import search_result_clustering
 from cluster_concept import *
 from cluster_reorder import reorder_cluster
@@ -118,7 +118,8 @@ def SearchAPI():
         # json2 = {}
         # concepts_original_dict = concept2dic(concepts_original, json2)
         # clusters = process_cluster_concept2(concepts_original_dict, clusters, 5)
-        session['concepts_original'] = concepts_original
+        # session['concepts_original'] = concepts_original
+        concepts_original_json = concept2dic(concepts_original)
         clusters = process_cluster_concept(solr_results, clusters, 5, concepts_original)
         t6 = time.time()
         print(f"time to collect cluster info: {t6 - t5}")
@@ -135,22 +136,20 @@ def SearchAPI():
         #         break
         # json={}
         # concepts=concept2dic(frequent_concepts,json)
-        
+
         content={'solr_results':solr_results,
                 'clusters': clusters,
                 "cluster_order": cluster_idx,
                 "idx_to_groups": idx_to_groups, # put clusters into groups, determine its color
-                "d3_json": d3_json}
-        session['solr_results'] = solr_results
-        print(len(session['solr_results']['response']['docs']))
-        session['clusters'] = clusters
-        print(len(session['clusters']))
-        session['cluster_order'] = cluster_idx
-        session['idx_to_groups'] = idx_to_groups
-        session['d3_json'] = d3_json
-        session['must_exclude'] = []
-        session['top_k_docs'] = top_k_docs
-        session['free_text'] = free_text
+                "d3_json": d3_json,
+                "must_exclude": [],
+                "concepts_original": concepts_original_json}
+        # session['solr_results'] = solr_results
+        # print(len(session['solr_results']['response']['docs']))
+        # session['clusters'] = clusters
+        # print(len(session['clusters']))
+        # session['cluster_order'] = cluster_idx
+        # session['must_exclude'] = []
         response=jsonify(content)
         # response.headers.add("Access-Control-Allow-Origin", "*")
         print(response.headers)
@@ -168,17 +167,17 @@ def EditClusterAPI():
     json_data = request.get_json(force=True)
     is_valid = True
     if is_valid:
-        concepts_original = session['concepts_original']
-        current_clusters = session['clusters']
-        solr_results = session['solr_results']
-        top_k_docs = session['top_k_docs']
-        print(len(solr_results['response']['docs']))
+        concepts_original = dic2concept(json_data['concepts_original'])
+        current_clusters = json_data['clusters']
+        solr_results = json_data['solr_results']
+        top_k_docs = json_data['top_k_docs']
+        print(json_data['top_k_docs'], json_data['must_exclude'])
         new_clusters = []
         if json_data['action']=='delete':
-            session['must_exclude'].append(json_data['cid'])
-            new_clusters = edit_cluster(current_clusters, concepts_original, session['must_exclude'], top_k_docs)
+            json_data['must_exclude'].append(json_data['cid'])
+            new_clusters = edit_cluster(current_clusters, concepts_original, json_data['must_exclude'], top_k_docs)
             cluster = new_clusters[-1]
-            summary = generate_summary(session['free_text'], cluster['documents'], cluster['cid'], solr_results['response']['docs'], 3, snomed=True)
+            summary = generate_summary(json_data['free_text'], cluster['documents'], cluster['cid'], solr_results['response']['docs'], 3, snomed=True)
             cluster['summary'] = summary
             new_clusters[-1] = cluster
             print(cluster)
@@ -192,7 +191,7 @@ def EditClusterAPI():
                     if label.lower() not in lower_labels:
                         labels.append(label)
                         lower_labels.append(label.lower())
-                summary = generate_summary(session['free_text'], list(c_object.docids), cid, solr_results['response']['docs'], 3, snomed=True)
+                summary = generate_summary(json_data['free_text'], list(c_object.docids), cid, solr_results['response']['docs'], 3, snomed=True)
                 c_dict = {
                     "labels": labels,
                     "documents": list(c_object.docids),
@@ -208,11 +207,12 @@ def EditClusterAPI():
                 'clusters': clusters,
                 "cluster_order": cluster_idx,
                 "idx_to_groups": idx_to_groups, # put clusters into groups, determine its color
-                "d3_json": d3_json}
-        session['clusters'] = clusters
-        session['cluster_order'] = cluster_idx
-        session['idx_to_groups'] = idx_to_groups
-        session['d3_json'] = d3_json
+                "d3_json": d3_json,
+                "must_exclude": json_data['must_exclude']}
+        # session['clusters'] = clusters
+        # session['cluster_order'] = cluster_idx
+        # session['idx_to_groups'] = idx_to_groups
+        # session['d3_json'] = d3_json
         response = jsonify(content)
         # response.headers.add("Access-Control-Allow-Origin", "*")
         return response

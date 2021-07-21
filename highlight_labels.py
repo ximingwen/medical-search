@@ -15,16 +15,18 @@ def process_highlight(doc, target_clusters):
     for aw in abstarct:
         aw = aw.translate(str.maketrans('', '', string.punctuation))
         abstract_words.append(stemmer.stem(aw.strip()))
-    
+    # print(abstract_words)
     title = doc['title'][0].lower().split(" ")
     title_words = []
     for tw in title:
         tw = tw.translate(str.maketrans('', '', string.punctuation))
         title_words.append(stemmer.stem(tw.strip()))
     for tc in target_clusters:
-        label_string = tc['labels'].lower().translate(str.maketrans('', '', string.punctuation))
-        # print(label_string)
-        label_words = word_tokenize(label_string)
+        label_words = []
+        for label_string in tc['labels']:
+            ls = label_string.lower().translate(str.maketrans('', '', string.punctuation))
+            # print(label_string)
+            label_words += word_tokenize(ls)
         filter_words = []
         for w in label_words:
             # print(w)
@@ -56,8 +58,11 @@ def add_new_span(existing_span, filter_words, text_words, color):
                             existing_span[i-1]['color'] = color
                         break
                     # can be inserted after the last span
-                    elif (i==(len(existing_span)-1)) and (idx > span['span'][1]):
-                        existing_span.insert(i+1, {'span':[idx, idx], 'color': color})
+                    elif (i==(len(existing_span)-1)):
+                        if idx > span['span'][1]:
+                            existing_span.insert(i+1, {'span':[idx, idx], 'color': color})
+                        elif idx == span['span'][1]:
+                            span['color'] = color
                         break
     # print(existing_span)
 
