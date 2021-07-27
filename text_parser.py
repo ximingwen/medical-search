@@ -9,6 +9,17 @@ from nltk.stem import PorterStemmer
 
 #CTAKES_URL_PREFIX_LOCAL = 'http://localhost:12346/ctakes-web-rest/service/analyze?pipeline=Default'
 #CTAKES_URL_PREFIX_SERVER = 'http://localhost:8080/ctakes-web-rest/service/analyze?pipeline=Default'
+
+Concept2type = {
+    "T017": 0, "T029": 0, "T023": 0, "T030": 0, "T031": 0, "T022": 0, "T025": 0, "T026": 0, "T018": 0, "T021": 0, "T024": 0,
+    "T020": 1, "T190": 1, "T049": 1, "T019": 1, "T047": 1, "T050": 1, "T033": 1, "T037": 1, "T048": 1, "T191": 1, "T046": 1,
+    "T184": 2,
+    "T060": 3, "T065": 3, "T058": 3, "T063": 3, "T062": 3, "T061": 3,
+    "T059": 4,
+    "T116": 5, "T195": 5, "T123": 5, "T122": 5, "T103": 5, "T120": 5, "T104": 5, "T200": 5, "T196": 5, "T126": 5, "T131": 5,
+    "T125": 5, "T129": 5, "T130": 5, "T197": 5, "T114": 5, "T109": 5, "T121": 5, "T192": 5, "T127": 5
+}
+
 def search_result_parser(search_result,local,top_k_docs):
     porter = PorterStemmer()
     parsed_results = search_result['response']
@@ -58,7 +69,7 @@ class Concept(object):
         self.docids = set()
        
     
-    def __init__(self, cui, snomed_codes, mention, pmid, net_count, docids):
+    def __init__(self, cui, snomed_codes, mention, pmid, net_count, docids, concept_type):
         self.cui = cui
         self.snomed_codes = set(snomed_codes)
         self.mentions = set(mention)
@@ -66,6 +77,7 @@ class Concept(object):
         self.net_count = net_count
         self.clusters = set()
         self.docids = set(docids)
+        self.concept_type = concept_type
       
 def concept2dic(concepts):
     json = {}
@@ -76,12 +88,13 @@ def concept2dic(concepts):
         json[cui]['net_count'] = concept.net_count
         json[cui]['clusters'] = list(concept.clusters)
         json[cui]['docids'] = list(concept.docids)
+        json[cui]['concept_type'] = concept.concept_type
     return json
 
 def dic2concept(concepts_json):
     concepts = {}
     for cui,concept in concepts_json.items():
-        c_object = Concept(cui, [], concept['mentions'], concept['pmids'], concept['net_count'], concept['docids'])
+        c_object = Concept(cui, [], concept['mentions'], concept['pmids'], concept['net_count'], concept['docids'], concept['concept_type'])
         # c_object.cui = cui
         # c_object.mentions = set(concept['mentions'])
         # c_object.pmids = set(concept['pmids'])
@@ -104,8 +117,10 @@ def update_concept_set(concepts, step_code_string, pmid, docid):
         cui=cui_snomed.split(";")[0]
         cui_list.append(cui)
         snomeds=cui_snomed.split(";")[2].split(",")
+        c_types = cui_snomed.split(";")[1].split(",")
+        c_type = Concept2type[c_types[0]]
         if cui not in concepts:
-            concepts[cui] = Concept(cui,snomeds, [text], [pmid], 1, [docid])
+            concepts[cui] = Concept(cui,snomeds, [text], [pmid], 1, [docid], c_type)
         else:
             concepts[cui].mentions.add(text)
             concepts[cui].pmids.add(pmid)

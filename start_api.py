@@ -14,7 +14,7 @@ from text_parser import search_result_parser
 from text_parser import concept2dic, dic2concept
 from carrot_clustering import search_result_clustering
 from cluster_concept import *
-from cluster_reorder import reorder_cluster
+from cluster_reorder import reorder_cluster, reorder_by_type
 from topic_2d import proj_cluster
 from highlight_labels import process_highlight
 from concept_cluster import concept_clustering, edit_cluster
@@ -110,8 +110,12 @@ def SearchAPI():
 
         t5 = time.time()
         print(f"time to generate summary: {t5 - t4}")
-        reorder_index, idx_to_groups, d3_json = reorder_cluster(clusters)
-        # proj_cluster(clusters, idx_to_cluster1)
+        if json_data['v_baseline']:
+            clusters = sorted(clusters, key = lambda x: len(x['documents']), reverse = True)
+            reorder_index, idx_to_groups, pos = reorder_by_type(clusters, concepts_original)
+        else:
+            reorder_index, idx_to_groups, d3_json = reorder_cluster(clusters)
+            # proj_cluster(clusters, idx_to_cluster1)
         cluster_idx = [int(idx) for idx in reorder_index]
         # idx_to_cluster1 = [int(idx) for idx in idx_to_cluster1]
         # idx_to_cluster2 = [int(idx) for idx in idx_to_cluster2]
@@ -136,14 +140,20 @@ def SearchAPI():
         #         break
         # json={}
         # concepts=concept2dic(frequent_concepts,json)
-
-        content={'solr_results':solr_results,
-                'clusters': clusters,
-                "cluster_order": cluster_idx,
-                "idx_to_groups": idx_to_groups, # put clusters into groups, determine its color
-                "d3_json": d3_json,
-                "must_exclude": [],
-                "concepts_original": concepts_original_json}
+        if json_data['v_baseline']:
+            content={'solr_results':solr_results,
+                    'clusters': clusters,
+                    "cluster_order": cluster_idx,
+                    "idx_to_groups": idx_to_groups, # put clusters into groups, determine its color
+                    "type_pos": pos}
+        else:
+            content={'solr_results':solr_results,
+                    'clusters': clusters,
+                    "cluster_order": cluster_idx,
+                    "idx_to_groups": idx_to_groups, # put clusters into groups, determine its color
+                    "d3_json": d3_json,
+                    "must_exclude": [],
+                    "concepts_original": concepts_original_json}
         # session['solr_results'] = solr_results
         # print(len(session['solr_results']['response']['docs']))
         # session['clusters'] = clusters

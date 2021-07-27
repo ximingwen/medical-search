@@ -310,3 +310,29 @@ def reorder_cluster(clusters):
     # print(new_corr_matrix)
     # sns.heatmap(new_corr_matrix)
     return reorder_idx, idx_to_cluster1, d3_json['children'][0]
+
+def reorder_by_type(clusters, concepts_original):
+    idx_to_cluster = []
+    for cluster in clusters:
+        idx_to_cluster.append(concepts_original[cluster['cid']].concept_type)
+        print(cluster['labels'])
+    print(idx_to_cluster)
+    reorder_idx = np.argsort(idx_to_cluster)
+    print(reorder_idx)
+    pos = [-1, -1, -1, -1, -1, -1]
+    curr_type = -1
+    for i, cluster_id in enumerate(reorder_idx):
+        t = idx_to_cluster[cluster_id]
+        if t != curr_type:
+            curr_type = t
+            pos[curr_type] = i
+    print(pos)
+    non_zero_pos = [i for i in pos if (i >= 0)]
+    non_zero_pos.append(len(clusters))
+    sorted_idx = []
+    for i in range(len(non_zero_pos)-1):
+        tmp = list(reorder_idx[non_zero_pos[i]:non_zero_pos[i + 1]])
+        tmp.sort()
+        sorted_idx += tmp
+    print(sorted_idx)
+    return sorted_idx, idx_to_cluster, pos
