@@ -315,10 +315,7 @@ def reorder_by_type(clusters, concepts_original):
     idx_to_cluster = []
     for cluster in clusters:
         idx_to_cluster.append(concepts_original[cluster['cid']].concept_type)
-        print(cluster['labels'])
-    print(idx_to_cluster)
     reorder_idx = np.argsort(idx_to_cluster)
-    print(reorder_idx)
     pos = [-1, -1, -1, -1, -1, -1]
     curr_type = -1
     for i, cluster_id in enumerate(reorder_idx):
@@ -326,7 +323,6 @@ def reorder_by_type(clusters, concepts_original):
         if t != curr_type:
             curr_type = t
             pos[curr_type] = i
-    print(pos)
     non_zero_pos = [i for i in pos if (i >= 0)]
     non_zero_pos.append(len(clusters))
     sorted_idx = []
@@ -334,5 +330,4 @@ def reorder_by_type(clusters, concepts_original):
         tmp = list(reorder_idx[non_zero_pos[i]:non_zero_pos[i + 1]])
         tmp.sort()
         sorted_idx += tmp
-    print(sorted_idx)
     return sorted_idx, idx_to_cluster, pos
