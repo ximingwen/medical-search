@@ -20,6 +20,7 @@ from highlight_labels import process_highlight
 from concept_cluster import concept_clustering, edit_cluster
 from phrase_parser import search_phrase_parser
 from concept_summary import extract_sent_candids, generate_summary
+import os
 
 app = Flask(__name__)
 # SESSION_TYPE = 'filesystem'
@@ -145,7 +146,8 @@ def SearchAPI():
                     'clusters': clusters,
                     "cluster_order": cluster_idx,
                     "idx_to_groups": idx_to_groups, # put clusters into groups, determine its color
-                    "type_pos": pos}
+                    "type_pos": pos,
+                    "must_exclude": []}
         else:
             content={'solr_results':solr_results,
                     'clusters': clusters,
@@ -209,16 +211,22 @@ def EditClusterAPI():
                     "summary": summary
                 }
                 current_clusters.append(c_dict)
+                if cid in json_data['must_exclude']:
+                    json_data['must_exclude'].remove(cid)
             new_clusters = current_clusters
         reorder_index, idx_to_groups, d3_json = reorder_cluster(new_clusters)
         cluster_idx = [int(idx) for idx in reorder_index]
         clusters = process_cluster_concept(solr_results, new_clusters, 5, concepts_original)
+        exclude_info = {}
+        for cid in json_data['must_exclude']:
+            exclude_info[cid] = {"labels": list(concepts_original[cid].mentions)[0], "size": len(concepts_original[cid].docids)}
         content={
                 'clusters': clusters,
                 "cluster_order": cluster_idx,
                 "idx_to_groups": idx_to_groups, # put clusters into groups, determine its color
                 "d3_json": d3_json,
-                "must_exclude": json_data['must_exclude']}
+                "must_exclude": json_data['must_exclude'],
+                "exclude_info": exclude_info}
         # session['clusters'] = clusters
         # session['cluster_order'] = cluster_idx
         # session['idx_to_groups'] = idx_to_groups
@@ -270,6 +278,19 @@ def HighlightLabelAPI():
         content = {"docs": new_docs}
     response = jsonify(content)
     # response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+@app.route('/save_actions', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def save_actions():
+    if not os.path.exists("action_log"):
+        os.mkdir("action_log")
+    json_data = request.get_json(force=True)
+    client_id = json_data['id']
+    filename = f"{client_id}.jsonl"
+    with open(f"action_log/{filename}", 'a') as log_file:
+        log_file.write(json.dumps(json_data['json']) + "\n")
+    response = jsonify({})
     return response
 
 '''
