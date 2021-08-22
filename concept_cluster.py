@@ -10,11 +10,15 @@ concepts is a dict with cui: concept object as defined in text_parser.py
     self.clusters = set()
     self.docids = set([docids])
 '''
+
+stop_list = ["C0332875", "C3539106", "C1446409", "C0205160", "C0185115", "C0700287", "C1273869", "C1299583"]
+
 def concept_clustering(concepts, num_clusters, top_k_docs):
     cui_list = []
-    cooccur_mat = -np.ones((len(concepts.keys()), len(concepts.keys())), dtype=np.int)
     for cui in concepts:
-        cui_list.append(cui)
+        if cui not in stop_list:
+            cui_list.append(cui)
+    cooccur_mat = -np.ones((len(cui_list), len(cui_list)), dtype=np.int)
     for i in range(len(cui_list)):
         cooccur_mat[i, i] = len(concepts[cui_list[i]].docids)
         # for j in range(i, len(cui_list)):
@@ -77,11 +81,11 @@ def edit_cluster(current_clusters, concepts, must_exclude, top_k_docs):
     cui_list = []
     selected_concept = []
     for cui in concepts:
-        if cui not in must_exclude:
+        if (cui not in must_exclude) and (cui not in stop_list):
             cui_list.append(cui)
     cooccur_mat = -np.ones((len(cui_list), len(cui_list)), dtype=np.int)
     for cluster in current_clusters:
-        if cluster['cid'] not in must_exclude:
+        if (cluster['cid'] not in must_exclude) and (cluster['cid'] not in stop_list):
             selected_concept.append(cui_list.index(cluster['cid']))
     for i in range(len(cui_list)):
         cooccur_mat[i, i] = len(concepts[cui_list[i]].docids)
