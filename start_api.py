@@ -183,16 +183,17 @@ def EditClusterAPI():
         current_clusters = json_data['clusters']
         solr_results = json_data['solr_results']
         top_k_docs = json_data['top_k_docs']
-        print(json_data['top_k_docs'], json_data['must_exclude'])
+        # print(json_data['top_k_docs'], json_data['must_exclude'])
         new_clusters = []
         if json_data['action']=='delete':
             json_data['must_exclude'].append(json_data['cid'])
-            new_clusters = edit_cluster(current_clusters, concepts_original, json_data['must_exclude'], top_k_docs)
-            cluster = new_clusters[-1]
-            summary = generate_summary(json_data['free_text'], cluster['documents'], cluster['cid'], solr_results['response']['docs'], 3, snomed=True)
-            cluster['summary'] = summary
-            new_clusters[-1] = cluster
-            print(cluster)
+            new_clusters = [cluster for cluster in current_clusters if cluster['cid'] not in json_data['must_exclude']]
+            # new_clusters = edit_cluster(current_clusters, concepts_original, json_data['must_exclude'], top_k_docs)
+            # cluster = new_clusters[-1]
+            # summary = generate_summary(json_data['free_text'], cluster['documents'], cluster['cid'], solr_results['response']['docs'], 3, snomed=True)
+            # cluster['summary'] = summary
+            # new_clusters[-1] = cluster
+            # print(cluster)
         else:
             # case when the concept already exists
             for cid in json_data['cid']:
