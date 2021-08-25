@@ -42,7 +42,8 @@ def concept_clustering(concepts, num_clusters, top_k_docs):
         c_dict = {
             "labels": labels,
             "documents": list(c_object.docids),
-            "cid": cui_list[c]
+            "cid": cui_list[c],
+            "c_type": c_object.concept_type
         }
         clusters.append(c_dict)
     return clusters

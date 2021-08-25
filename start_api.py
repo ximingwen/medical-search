@@ -209,7 +209,8 @@ def EditClusterAPI():
                     "labels": labels,
                     "documents": list(c_object.docids),
                     "cid": cid,
-                    "summary": summary
+                    "summary": summary,
+                    "c_type": c_object.concept_type
                 }
                 current_clusters.append(c_dict)
                 if cid in json_data['must_exclude']:
